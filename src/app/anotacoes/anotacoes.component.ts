@@ -1,108 +1,75 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NotesService, NoteBlock, Priority } from '../core/services/notes.service';
+import { Subscription } from 'rxjs';
+import { ApiNotesService, NoteBlock } from '../core/services/api-notes.service';
+import { NotesRefreshService } from '../core/services/notes-refresh.service';
 
 @Component({
   selector: 'app-anotacoes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './anotacoes.component.html',
   styleUrl: './anotacoes.component.css'
 })
-export class AnotacoesComponent {
+export class AnotacoesComponent implements OnInit, OnDestroy {
+  @Output() noteSelected = new EventEmitter<NoteBlock>();
+
   notes: NoteBlock[] = [];
+  loading = true;
 
-  showModal = false;
-  isEditing = false;
-  selectedNote: NoteBlock | null = null;
+  private refreshSub?: Subscription;
 
-  draftTitle = '';
-  draftDescription = '';
-  draftPriority: Priority = 'media';
+  constructor(
+    private apiNotesService: ApiNotesService,
+    private notesRefreshService: NotesRefreshService
+  ) {}
 
-  constructor(private notesService: NotesService) {
-    this.notesService.notes$.subscribe(notes => {
-      this.notes = [...notes]
-        .filter(n => !n.deleted && !n.done)
-        .sort((a, b) => b.createdAt - a.createdAt);
+  ngOnInit() {
+    this.loadNotes();
 
-      if (this.selectedNote) {
-        const updated = notes.find(n => n.id === this.selectedNote?.id) || null;
-        this.selectedNote = updated;
-
-        if (updated) {
-          this.draftPriority = updated.priority;
-        } else {
-          this.closeModal();
-        }
-      }
+    this.refreshSub = this.notesRefreshService.refresh$.subscribe(() => {
+      this.loadNotes();
     });
   }
 
-  trackById(_: number, note: NoteBlock) {
+  ngOnDestroy() {
+    this.refreshSub?.unsubscribe();
+  }
+
+  selectNote(note: NoteBlock) {
+    this.noteSelected.emit(note);
+  }
+
+  trackByNoteId(index: number, note: NoteBlock): string {
     return note.id;
   }
 
-  openNote(note: NoteBlock) {
-    this.selectedNote = note;
-    this.draftTitle = note.title;
-    this.draftDescription = note.description;
-    this.draftPriority = note.priority;
-    this.isEditing = false;
-    this.showModal = true;
+  priorityLabel(priority: string): string {
+    if (priority === 'alta') return 'Alta';
+    if (priority === 'media') return 'Média';
+    return 'Baixa';
   }
 
-  closeModal() {
-    this.showModal = false;
-    this.isEditing = false;
-    this.selectedNote = null;
-    this.draftTitle = '';
-    this.draftDescription = '';
-    this.draftPriority = 'media';
-  }
+  private loadNotes() {
+    this.loading = true;
 
-  startEdit() {
-    if (!this.selectedNote) return;
+    this.apiNotesService.getActive().subscribe({
+      next: (notes) => {
+        this.notes = notes
+          .filter(note => !note.deleted && !note.done)
+          .sort((a, b) => {
+            const aDate = `${a.endDate || a.date}T${a.endTime || '23:59'}`;
+            const bDate = `${b.endDate || b.date}T${b.endTime || '23:59'}`;
+            return new Date(aDate).getTime() - new Date(bDate).getTime();
+          });
 
-    this.draftTitle = this.selectedNote.title;
-    this.draftDescription = this.selectedNote.description;
-    this.draftPriority = this.selectedNote.priority;
-    this.isEditing = true;
-  }
-
-  cancelEdit() {
-    this.isEditing = false;
-
-    if (!this.selectedNote) return;
-
-    this.draftTitle = this.selectedNote.title;
-    this.draftDescription = this.selectedNote.description;
-    this.draftPriority = this.selectedNote.priority;
-  }
-
-  saveEdit() {
-    if (!this.selectedNote) return;
-
-    this.notesService.updateNote(this.selectedNote.id, {
-      title: this.draftTitle.trim() || 'Sem título',
-      description: this.draftDescription.trim(),
-      priority: this.draftPriority
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar anotações:', err);
+        this.notes = [];
+        this.loading = false;
+      }
     });
-
-    this.isEditing = false;
-  }
-
-  deleteSelected() {
-    if (!this.selectedNote) return;
-
-    this.notesService.moveToTrash(this.selectedNote.id);
-    this.closeModal();
-  }
-
-  toggleDoneSelected() {
-    if (!this.selectedNote) return;
-
-    this.notesService.toggleDone(this.selectedNote.id);
   }
 }

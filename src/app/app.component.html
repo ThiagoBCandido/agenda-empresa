@@ -104,7 +104,7 @@
             </div>
 
             <div class="pane pane-right">
-              <app-anotacoes></app-anotacoes>
+              <app-anotacoes (noteSelected)="openNoteFromAnnotations($event)"></app-anotacoes>
             </div>
 
             <div class="tampa" aria-hidden="true" (click)="toggleCoverSide()" title="Alternar entre calendário e anotações">

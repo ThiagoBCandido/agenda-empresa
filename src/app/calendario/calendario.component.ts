@@ -4,10 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { forkJoin, of, switchMap } from 'rxjs';
+
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { ApiNotesService, Priority, NoteBlock, NoteWritePayload } from '../core/services/api-notes.service';
+
+import {
+  ApiNotesService,
+  Priority,
+  NoteBlock,
+  NoteWritePayload
+} from '../core/services/api-notes.service';
+import { NotesRefreshService } from '../core/services/notes-refresh.service';
 
 function priorityColor(priority: Priority) {
   if (priority === 'alta') return '#ef4444';
@@ -111,7 +119,10 @@ export class CalendarioComponent implements OnInit {
     }
   };
 
-  constructor(private notes: ApiNotesService) {}
+  constructor(
+    private notes: ApiNotesService,
+    private notesRefreshService: NotesRefreshService
+  ) {}
 
   ngOnInit() {
     this.reloadCalendarEvents();
@@ -314,6 +325,7 @@ export class CalendarioComponent implements OnInit {
         this.pendingActions.clear();
         this.reloadCalendarEvents();
         this.refreshSelectedDayList();
+        this.notesRefreshService.notify();
         this.closeModal();
       },
       error: (err) => {
@@ -336,6 +348,7 @@ export class CalendarioComponent implements OnInit {
         this.pendingActions.clear();
         this.reloadCalendarEvents();
         this.refreshSelectedDayList();
+        this.notesRefreshService.notify();
         this.closeModal();
       },
       error: (err) => {

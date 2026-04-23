@@ -14,6 +14,7 @@ import { AuthService } from './core/services/auth.service';
 import { ThemeService, AppTheme } from './core/services/theme.service';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { NoteBlock } from './core/services/api-notes.service';
 
 type AppPage = 'principal' | 'concluidos' | 'lixeira' | 'perfil';
 
@@ -59,6 +60,15 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private themeService: ThemeService
   ) {}
+
+  openNoteFromAnnotations(note: NoteBlock) {
+    this.activePage = 'principal';
+    this.activeTab = 'calendario';
+
+    setTimeout(() => {
+      this.cal?.openEditModal(note);
+    }, 0);
+  }
 
   ngOnInit() {
     this.themeSub = this.themeService.theme$.subscribe(theme => {
