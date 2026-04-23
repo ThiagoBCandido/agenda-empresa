@@ -12,7 +12,10 @@
         id="email"
         type="email"
         [(ngModel)]="email"
+        (ngModelChange)="clearError()"
         placeholder="seuemail@teste.com"
+        autocomplete="username"
+        spellcheck="false"
       />
     </div>
 
@@ -24,14 +27,17 @@
           id="password"
           [type]="showPassword ? 'text' : 'password'"
           [(ngModel)]="password"
+          (ngModelChange)="clearError()"
           placeholder="Digite sua senha"
           (keyup.enter)="submit()"
+          autocomplete="current-password"
         />
 
         <button
           class="password-toggle"
           type="button"
           (click)="togglePassword()"
+          [disabled]="loading"
           [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
           [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
         >
@@ -51,7 +57,7 @@
       {{ loading ? 'Entrando...' : 'Entrar' }}
     </button>
 
-    <button class="link-btn" type="button" (click)="goToRegister()">
+    <button class="link-btn" type="button" (click)="goToRegister()" [disabled]="loading">
       Criar conta
     </button>
   </div>

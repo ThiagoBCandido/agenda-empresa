@@ -26,21 +26,37 @@ export class RegisterComponent {
   showConfirmPassword = false;
 
   togglePassword() {
+    if (this.loading) return;
     this.showPassword = !this.showPassword;
   }
 
   toggleConfirmPassword() {
+    if (this.loading) return;
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  clearError() {
+    if (this.errorMessage) {
+      this.errorMessage = '';
+    }
+  }
+
   goToLogin() {
+    if (this.loading) return;
     this.router.navigateByUrl('/login');
   }
 
   submit() {
+    if (this.loading) return;
+
     this.errorMessage = '';
 
-    if (!this.name.trim() || !this.email.trim() || !this.password.trim() || !this.confirmPassword.trim()) {
+    const name = this.name.trim();
+    const email = this.email.trim();
+    const password = this.password.trim();
+    const confirmPassword = this.confirmPassword.trim();
+
+    if (!name || !email || !password || !confirmPassword) {
       this.errorMessage = 'Preencha todos os campos.';
       return;
     }
@@ -53,8 +69,8 @@ export class RegisterComponent {
     this.loading = true;
 
     this.authService.register({
-      name: this.name.trim(),
-      email: this.email.trim(),
+      name,
+      email,
       password: this.password
     }).subscribe({
       next: () => {

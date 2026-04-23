@@ -22,17 +22,30 @@ export class LoginComponent {
   showPassword = false;
 
   togglePassword() {
+    if (this.loading) return;
     this.showPassword = !this.showPassword;
   }
 
+  clearError() {
+    if (this.errorMessage) {
+      this.errorMessage = '';
+    }
+  }
+
   goToRegister() {
+    if (this.loading) return;
     this.router.navigateByUrl('/register');
   }
 
   submit() {
+    if (this.loading) return;
+
     this.errorMessage = '';
 
-    if (!this.email.trim() || !this.password.trim()) {
+    const email = this.email.trim();
+    const password = this.password.trim();
+
+    if (!email || !password) {
       this.errorMessage = 'Preencha e-mail e senha.';
       return;
     }
@@ -40,7 +53,7 @@ export class LoginComponent {
     this.loading = true;
 
     this.authService.login({
-      email: this.email.trim(),
+      email,
       password: this.password
     }).subscribe({
       next: () => {
