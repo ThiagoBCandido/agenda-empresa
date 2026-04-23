@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { CalendarioComponent } from '../calendario/calendario.component';
 import { AnotacoesComponent } from '../anotacoes/anotacoes.component';
@@ -53,7 +54,8 @@ export class AppShellComponent implements OnInit, OnDestroy {
   constructor(
     private deadlineAlertService: DeadlineAlertService,
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private router: Router
   ) {}
 
   openNoteFromAnnotations(note: NoteBlock) {
@@ -82,10 +84,16 @@ export class AppShellComponent implements OnInit, OnDestroy {
       } else {
         this.deadlineAlertService.stop();
       }
+
+      if (!user) {
+        this.router.navigateByUrl('/login');
+      }
     });
 
     if (this.authService.getToken()) {
       this.syncCurrentUserFromBackend();
+    } else {
+      this.router.navigateByUrl('/login');
     }
   }
 
@@ -103,6 +111,7 @@ export class AppShellComponent implements OnInit, OnDestroy {
     this.activePage = 'principal';
     this.activeTab = 'calendario';
     this.showPriorityMenu = false;
+    this.router.navigateByUrl('/login');
   }
 
   setTab(tab: 'calendario' | 'anotacoes') {
@@ -202,7 +211,8 @@ export class AppShellComponent implements OnInit, OnDestroy {
         }
       },
       error: () => {
-        // o interceptor já cuida do logout limpo
+        this.authService.logout(false);
+        this.router.navigateByUrl('/login');
       }
     });
   }

@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
+
 import { CalendarioComponent } from './calendario/calendario.component';
 import { AnotacoesComponent } from './anotacoes/anotacoes.component';
 import { ConcluidosComponent } from './concluidos/concluidos.component';
@@ -8,13 +10,14 @@ import { LixeiraComponent } from './lixeira/lixeira.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { ToastComponent } from './shared/toast/toast.component';
 import { DeadlineAlertComponent } from './shared/deadline-alert/deadline-alert.component';
-import { Priority } from './core/services/api-notes.service';
+
+import { Priority, NoteBlock } from './core/services/api-notes.service';
 import { DeadlineAlertService } from './deadline-alert.service';
 import { AuthService } from './core/services/auth.service';
 import { ThemeService, AppTheme } from './core/services/theme.service';
+
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { NoteBlock } from './core/services/api-notes.service';
 
 type AppPage = 'principal' | 'concluidos' | 'lixeira' | 'perfil';
 
@@ -39,26 +42,33 @@ type AppPage = 'principal' | 'concluidos' | 'lixeira' | 'perfil';
 export class AppComponent implements OnInit, OnDestroy {
   activeTab: 'calendario' | 'anotacoes' = 'calendario';
   activePage: AppPage = 'principal';
+
   showPriorityMenu = false;
   sidebarCollapsed = true;
+
   theme: AppTheme = 'dark';
+
   isAuthenticated = false;
   authMode: 'login' | 'register' = 'login';
+
   currentUserName = '';
   currentUserEmail = '';
   currentUserPhoto: string | null = null;
+
   sessionMessage = '';
 
   private userSub?: Subscription;
   private themeSub?: Subscription;
   private sessionMessageSub?: Subscription;
+  private routerSub?: Subscription;
 
   @ViewChild('cal') cal!: CalendarioComponent;
 
   constructor(
     private deadlineAlertService: DeadlineAlertService,
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private router: Router
   ) {}
 
   openNoteFromAnnotations(note: NoteBlock) {
@@ -71,6 +81,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.setAuthModeFromUrl(this.router.url);
+
     this.themeSub = this.themeService.theme$.subscribe(theme => {
       this.theme = theme;
     });
@@ -78,6 +90,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sessionMessageSub = this.authService.sessionMessage$.subscribe(message => {
       this.sessionMessage = message;
     });
+
+    this.routerSub = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        if (!this.isAuthenticated) {
+          this.setAuthModeFromUrl(this.router.url);
+        }
+      });
 
     this.userSub = this.authService.currentUser$.subscribe(user => {
       this.isAuthenticated = !!user;
@@ -92,6 +112,15 @@ export class AppComponent implements OnInit, OnDestroy {
       } else {
         this.deadlineAlertService.stop();
       }
+
+      if (
+        this.isAuthenticated &&
+        (this.router.url === '/' ||
+          this.router.url.startsWith('/login') ||
+          this.router.url.startsWith('/register'))
+      ) {
+        this.router.navigateByUrl('/app');
+      }
     });
 
     if (this.authService.getToken()) {
@@ -103,26 +132,31 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userSub?.unsubscribe();
     this.themeSub?.unsubscribe();
     this.sessionMessageSub?.unsubscribe();
+    this.routerSub?.unsubscribe();
   }
 
   handleLoggedIn() {
     this.isAuthenticated = true;
     this.authMode = 'login';
     this.syncCurrentUserFromBackend();
+    this.router.navigateByUrl('/app');
   }
 
   handleRegistered() {
     this.isAuthenticated = true;
     this.authMode = 'login';
     this.syncCurrentUserFromBackend();
+    this.router.navigateByUrl('/app');
   }
 
   showRegister() {
     this.authMode = 'register';
+    this.router.navigateByUrl('/register');
   }
 
   showLogin() {
     this.authMode = 'login';
+    this.router.navigateByUrl('/login');
   }
 
   logout() {
@@ -136,6 +170,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.activeTab = 'calendario';
     this.authMode = 'login';
     this.showPriorityMenu = false;
+    this.router.navigateByUrl('/login');
   }
 
   setTab(tab: 'calendario' | 'anotacoes') {
@@ -204,6 +239,7 @@ export class AppComponent implements OnInit, OnDestroy {
   toggleTheme() {
     const previousTheme = this.theme;
     const nextTheme: AppTheme = this.theme === 'dark' ? 'light' : 'dark';
+
     this.themeService.setTheme(nextTheme);
 
     if (!this.isAuthenticated) return;
@@ -239,5 +275,9 @@ export class AppComponent implements OnInit, OnDestroy {
         // o interceptor já cuida do logout limpo
       }
     });
+  }
+
+  private setAuthModeFromUrl(url: string) {
+    this.authMode = url.startsWith('/register') ? 'register' : 'login';
   }
 }
