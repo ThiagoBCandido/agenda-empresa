@@ -12,7 +12,7 @@ export class DeadlineAlertService {
   private intervalId: number | null = null;
   private checking = false;
 
-  constructor(private apiNotesService: ApiNotesService) {}
+  constructor(private notesService: ApiNotesService) {}
 
   start() {
     if (this.intervalId !== null) return;
@@ -30,10 +30,6 @@ export class DeadlineAlertService {
       window.clearInterval(this.intervalId);
       this.intervalId = null;
     }
-
-    this.queue = [];
-    this.currentAlertSubject.next(null);
-    this.checking = false;
   }
 
   dismiss() {
@@ -42,38 +38,38 @@ export class DeadlineAlertService {
   }
 
   markDone(noteId: string) {
-    this.apiNotesService.toggleDone(noteId).subscribe({
+    this.notesService.toggleDone(noteId).subscribe({
       next: () => {
         this.dismiss();
       },
-      error: () => {
-        this.dismiss();
+      error: (err) => {
+        console.error('Erro ao concluir anotação no alerta:', err);
       }
     });
   }
 
   moveToTrash(noteId: string) {
-    this.apiNotesService.moveToTrash(noteId).subscribe({
+    this.notesService.moveToTrash(noteId).subscribe({
       next: () => {
         this.dismiss();
       },
-      error: () => {
-        this.dismiss();
+      error: (err) => {
+        console.error('Erro ao mover anotação para lixeira no alerta:', err);
       }
     });
   }
 
   private checkNow() {
     if (this.checking) return;
-
     this.checking = true;
 
-    this.apiNotesService.getActive().subscribe({
-      next: (activeNotes) => {
-        const now = new Date();
+    const now = new Date();
 
+    this.notesService.getActive().subscribe({
+      next: (activeNotes) => {
         for (const note of activeNotes) {
           if (this.alertedIds.has(note.id)) continue;
+          if (note.deleted || note.done) continue;
 
           const deadline = this.getDeadline(note);
           if (!deadline) continue;
@@ -87,7 +83,8 @@ export class DeadlineAlertService {
         this.showNext();
         this.checking = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Erro ao verificar deadlines:', err);
         this.checking = false;
       }
     });

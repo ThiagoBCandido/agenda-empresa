@@ -1,37 +1,22 @@
 <div class="notes-panel">
   <h2>anotações</h2>
-
   <div class="notes-empty" *ngIf="loading">
     Carregando anotações...
   </div>
-
   <div class="notes-empty" *ngIf="!loading && !notes.length">
     Nenhuma anotação criada ainda.
-  </div>
-
+</div>
   <div class="notes-list" *ngIf="!loading && notes.length">
-    <article
-      class="note-card"
-      *ngFor="let note of notes; trackBy: trackByNoteId"
-      [ngClass]="note.priority"
-      (click)="selectNote(note)"
-      (keydown.enter)="selectNote(note)"
-      tabindex="0"
-      role="button"
-      title="Clique para editar esta anotação"
-    >
+    <article class="note-card" *ngFor="let note of notes; trackBy: trackByNoteId" [ngClass]="note.priority" (click)="selectNote(note)" (keydown.enter)="selectNote(note)" tabindex="0" role="button" title="Clique para editar esta anotação">
       <div class="note-card-head">
         <h3>{{ note.title || 'Sem título' }}</h3>
-
         <span class="note-priority" [ngClass]="note.priority">
           {{ priorityLabel(note.priority) }}
         </span>
       </div>
-
       <p class="note-description" *ngIf="note.description">
         {{ note.description }}
       </p>
-
       <div class="note-meta">
         <span>{{ note.date }}</span>
         <span *ngIf="note.startTime">Início: {{ note.startTime }}</span>

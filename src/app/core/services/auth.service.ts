@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-/*exports*/
 export interface LoginRequest {
   email: string;
   password: string;
@@ -62,7 +61,6 @@ export interface AuthMeResponse {
   profilePhoto: string | null;
 }
 
-/*Classes*/
 @Injectable({
   providedIn: 'root'
 })

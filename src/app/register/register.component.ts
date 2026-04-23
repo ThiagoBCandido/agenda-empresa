@@ -14,14 +14,12 @@ import { AuthService } from '../core/services/auth.service';
 export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
-
   name = '';
   email = '';
   password = '';
   confirmPassword = '';
   errorMessage = '';
   loading = false;
-
   showPassword = false;
   showConfirmPassword = false;
 

@@ -26,7 +26,6 @@ export class AnotacoesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadNotes();
-
     this.refreshSub = this.notesRefreshService.refresh$.subscribe(() => {
       this.loadNotes();
     });
@@ -52,7 +51,6 @@ export class AnotacoesComponent implements OnInit, OnDestroy {
 
   private loadNotes() {
     this.loading = true;
-
     this.apiNotesService.getActive().subscribe({
       next: (notes) => {
         this.notes = notes

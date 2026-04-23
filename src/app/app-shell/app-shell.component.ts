@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-
 import { CalendarioComponent } from '../calendario/calendario.component';
 import { AnotacoesComponent } from '../anotacoes/anotacoes.component';
 import { ConcluidosComponent } from '../concluidos/concluidos.component';
@@ -10,7 +9,6 @@ import { LixeiraComponent } from '../lixeira/lixeira.component';
 import { PerfilComponent } from '../perfil/perfil.component';
 import { ToastComponent } from '../shared/toast/toast.component';
 import { DeadlineAlertComponent } from '../shared/deadline-alert/deadline-alert.component';
-
 import { Priority, NoteBlock } from '../core/services/api-notes.service';
 import { DeadlineAlertService } from '../deadline-alert.service';
 import { AuthService } from '../core/services/auth.service';
@@ -37,15 +35,12 @@ type AppPage = 'principal' | 'concluidos' | 'lixeira' | 'perfil';
 export class AppShellComponent implements OnInit, OnDestroy {
   activeTab: 'calendario' | 'anotacoes' = 'calendario';
   activePage: AppPage = 'principal';
-
   showPriorityMenu = false;
   sidebarCollapsed = true;
   theme: AppTheme = 'dark';
-
   currentUserName = '';
   currentUserEmail = '';
   currentUserPhoto: string | null = null;
-
   private userSub?: Subscription;
   private themeSub?: Subscription;
 

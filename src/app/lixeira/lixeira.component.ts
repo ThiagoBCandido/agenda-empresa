@@ -19,7 +19,6 @@ export class LixeiraComponent implements OnInit {
   notes: NoteBlock[] = [];
   searchTerm = '';
   groups: TrashGroup[] = [];
-
   showModal = false;
   selectedNote: NoteBlock | null = null;
 

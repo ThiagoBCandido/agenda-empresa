@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription, filter } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
-
 import { CalendarioComponent } from './calendario/calendario.component';
 import { AnotacoesComponent } from './anotacoes/anotacoes.component';
 import { ConcluidosComponent } from './concluidos/concluidos.component';
@@ -10,12 +9,10 @@ import { LixeiraComponent } from './lixeira/lixeira.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { ToastComponent } from './shared/toast/toast.component';
 import { DeadlineAlertComponent } from './shared/deadline-alert/deadline-alert.component';
-
 import { Priority, NoteBlock } from './core/services/api-notes.service';
 import { DeadlineAlertService } from './deadline-alert.service';
 import { AuthService } from './core/services/auth.service';
 import { ThemeService, AppTheme } from './core/services/theme.service';
-
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 

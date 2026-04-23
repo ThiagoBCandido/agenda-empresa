@@ -5,99 +5,38 @@
       <h1>Notes</h1>
       <p>Crie sua conta para acessar suas anotações</p>
     </div>
-
     <div class="form-group">
       <label for="name">Nome</label>
-      <input
-        id="name"
-        type="text"
-        [(ngModel)]="name"
-        (ngModelChange)="clearError()"
-        placeholder="Seu nome"
-        autocomplete="name"
-      />
+      <input id="name" type="text" [(ngModel)]="name" (ngModelChange)="clearError()" placeholder="Seu nome" autocomplete="name"/>
     </div>
-
     <div class="form-group">
       <label for="email">E-mail</label>
-      <input
-        id="email"
-        type="email"
-        [(ngModel)]="email"
-        (ngModelChange)="clearError()"
-        placeholder="seuemail@teste.com"
-        autocomplete="username"
-        spellcheck="false"
-      />
+      <input id="email" type="email" [(ngModel)]="email" (ngModelChange)="clearError()" placeholder="seuemail@teste.com" autocomplete="username" spellcheck="false"/>
     </div>
-
     <div class="form-group">
       <label for="password">Senha</label>
-
       <div class="password-field">
-        <input
-          id="password"
-          [type]="showPassword ? 'text' : 'password'"
-          [(ngModel)]="password"
-          (ngModelChange)="clearError()"
-          placeholder="Digite sua senha"
-          autocomplete="new-password"
-        />
-
-        <button
-          class="password-toggle"
-          type="button"
-          (click)="togglePassword()"
-          [disabled]="loading"
-          [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-          [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-        >
-          <img
-            [src]="showPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'"
-            [alt]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-          />
+        <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" (ngModelChange)="clearError()" placeholder="Digite sua senha" autocomplete="new-password"/>
+        <button class="password-toggle" type="button" (click)="togglePassword()" [disabled]="loading" [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'" [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
+          <img [src]="showPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'" [alt]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"/>
         </button>
       </div>
     </div>
-
     <div class="form-group">
       <label for="confirmPassword">Confirmar senha</label>
-
       <div class="password-field">
-        <input
-          id="confirmPassword"
-          [type]="showConfirmPassword ? 'text' : 'password'"
-          [(ngModel)]="confirmPassword"
-          (ngModelChange)="clearError()"
-          placeholder="Confirme sua senha"
-          (keyup.enter)="submit()"
-          autocomplete="new-password"
-        />
-
-        <button
-          class="password-toggle"
-          type="button"
-          (click)="toggleConfirmPassword()"
-          [disabled]="loading"
-          [attr.aria-label]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
-          [title]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
-        >
-          <img
-            [src]="showConfirmPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'"
-            [alt]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
-          />
+        <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" (ngModelChange)="clearError()" placeholder="Confirme sua senha" (keyup.enter)="submit()" autocomplete="new-password"/>
+        <button class="password-toggle" type="button" (click)="toggleConfirmPassword()" [disabled]="loading" [attr.aria-label]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'" [title]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'">
+          <img [src]="showConfirmPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'" [alt]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"/>
         </button>
       </div>
     </div>
-
     <div class="error" *ngIf="errorMessage">
       {{ errorMessage }}
     </div>
-
     <button class="register-btn" type="button" (click)="submit()" [disabled]="loading">
       {{ loading ? 'Criando conta...' : 'Criar conta' }}
     </button>
-
     <button class="link-btn" type="button" (click)="goToLogin()" [disabled]="loading">
       Já tenho conta
     </button>

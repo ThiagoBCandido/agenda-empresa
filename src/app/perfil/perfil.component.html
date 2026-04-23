@@ -1,99 +1,63 @@
 <div class="profile-page">
   <h1 class="profile-title">perfil</h1>
-
   <div class="profile-status" *ngIf="loading">Carregando perfil...</div>
   <div class="profile-status error" *ngIf="!loading && errorMessage">{{ errorMessage }}</div>
   <div class="profile-status success" *ngIf="!loading && successMessage">{{ successMessage }}</div>
-
   <section class="profile-card" *ngIf="!loading">
     <div class="profile-avatar-wrap">
       <label class="profile-avatar-button" for="profilePhotoInput" title="Alterar foto de perfil">
         <ng-container *ngIf="profilePhoto; else initialAvatar">
           <img class="profile-avatar-image" [src]="profilePhoto" alt="Foto de perfil" />
         </ng-container>
-
         <ng-template #initialAvatar>
           <div class="profile-avatar">
             {{ userInitial }}
           </div>
         </ng-template>
-
         <span class="profile-avatar-edit">Alterar foto</span>
       </label>
-
-      <input
-        id="profilePhotoInput"
-        type="file"
-        accept="image/*"
-        hidden
-        (change)="onFileSelected($event)"
-      />
-
-      <button
-        *ngIf="profilePhoto"
-        class="remove-photo-btn"
-        type="button"
-        (click)="removePhoto()"
-      >
-        Remover foto
-      </button>
+      <input id="profilePhotoInput" type="file" accept="image/*" hidden (change)="onFileSelected($event)"/>
+      <button *ngIf="profilePhoto" class="remove-photo-btn" type="button" (click)="removePhoto()">Remover foto</button>
     </div>
-
     <div class="profile-info">
       <div class="profile-actions">
-        <button *ngIf="!editMode" class="profile-btn secondary" type="button" (click)="startEdit()">
-          Editar perfil
-        </button>
-
+        <button *ngIf="!editMode" class="profile-btn secondary" type="button" (click)="startEdit()">Editar perfil</button>
         <ng-container *ngIf="editMode">
-          <button class="profile-btn ghost" type="button" (click)="cancelEdit()" [disabled]="saving">
-            Cancelar
-          </button>
+          <button class="profile-btn ghost" type="button" (click)="cancelEdit()" [disabled]="saving">Cancelar</button>
           <button class="profile-btn primary" type="button" (click)="saveProfile()" [disabled]="saving">
             {{ saving ? 'Salvando...' : 'Salvar alterações' }}
           </button>
         </ng-container>
       </div>
-
       <div class="info-row">
         <span class="info-label">Nome</span>
-
         <ng-container *ngIf="!editMode; else editName">
           <span class="info-value">{{ userName }}</span>
         </ng-container>
-
         <ng-template #editName>
           <input class="profile-input" type="text" [(ngModel)]="formName" />
         </ng-template>
       </div>
-
       <div class="info-row">
         <span class="info-label">E-mail</span>
-
         <ng-container *ngIf="!editMode; else editEmail">
           <span class="info-value">{{ userEmail }}</span>
         </ng-container>
-
         <ng-template #editEmail>
           <input class="profile-input" type="email" [(ngModel)]="formEmail" />
         </ng-template>
       </div>
-
       <div class="info-row">
         <span class="info-label">Função</span>
-
         <ng-container *ngIf="!editMode; else editJobTitle">
           <span class="info-value">{{ jobTitle }}</span>
         </ng-container>
-
         <ng-template #editJobTitle>
           <input class="profile-input" type="text" [(ngModel)]="formJobTitle" />
         </ng-template>
       </div>
-
      <div class="info-row">
       <span class="info-label">Fuso horário</span>
-
       <ng-container *ngIf="!editMode; else editTimeZone">
         <span class="info-value">{{ displayedTimeZoneLabel }}</span>
       </ng-container>
@@ -105,125 +69,77 @@
         </select>
       </ng-template>
     </div>
-
       <div class="info-row">
         <span class="info-label">Notificações</span>
-
         <ng-container *ngIf="!editMode; else editNotifications">
           <span class="info-value">{{ notificationsLabel }}</span>
         </ng-container>
-
         <ng-template #editNotifications>
           <div class="switch-inline">
-            <button
-              class="switch-btn"
-              type="button"
-              [class.active]="formNotificationsEnabled"
-              (click)="toggleNotificationsSwitch()"
-            >
+            <button class="switch-btn" type="button" [class.active]="formNotificationsEnabled" (click)="toggleNotificationsSwitch()">
               <span class="switch-thumb"></span>
               <span class="switch-text">{{ formNotificationsEnabled ? 'Ativadas' : 'Desativadas' }}</span>
             </button>
           </div>
         </ng-template>
       </div>
-
       <div class="info-row">
         <span class="info-label">Tema</span>
-
         <ng-container *ngIf="!editMode; else editTheme">
           <span class="info-value">{{ themeLabel }}</span>
         </ng-container>
-
         <ng-template #editTheme>
           <div class="switch-inline">
-            <button
-              class="switch-btn"
-              type="button"
-              [class.active]="formPreferredTheme === 'light'"
-              (click)="toggleThemeSwitch()"
-            >
+            <button class="switch-btn" type="button" [class.active]="formPreferredTheme === 'light'" (click)="toggleThemeSwitch()">
               <span class="switch-thumb"></span>
               <span class="switch-text">{{ formPreferredTheme === 'light' ? 'Claro' : 'Escuro' }}</span>
             </button>
           </div>
         </ng-template>
       </div>
-
       <div class="info-row">
         <span class="info-label">Permissão do sistema</span>
         <span class="info-value">{{ userRole }}</span>
       </div>
     </div>
   </section>
-
   <section class="password-card" *ngIf="!loading">
     <div class="password-header">
       <h2 class="password-title">segurança</h2>
-
       <button *ngIf="!passwordEditMode" class="profile-btn secondary" type="button" (click)="startPasswordEdit()">
         Alterar senha
       </button>
     </div>
-
     <div class="profile-status error" *ngIf="passwordErrorMessage">{{ passwordErrorMessage }}</div>
     <div class="profile-status success" *ngIf="passwordSuccessMessage">{{ passwordSuccessMessage }}</div>
-
     <div class="password-form" *ngIf="passwordEditMode">
       <div class="password-field-group">
         <label>Senha atual</label>
         <div class="password-field">
-          <input
-            class="profile-input password-input"
-            [type]="showCurrentPassword ? 'text' : 'password'"
-            [(ngModel)]="currentPassword"
-            placeholder="Digite sua senha atual"
-          />
+          <input class="profile-input password-input" [type]="showCurrentPassword ? 'text' : 'password'" [(ngModel)]="currentPassword" placeholder="Digite sua senha atual"/>
           <button class="password-toggle" type="button" (click)="toggleCurrentPassword()">
-            <img
-              [src]="showCurrentPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'"
-              alt="Alternar visualização"
-            />
+            <img [src]="showCurrentPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'" alt="Alternar visualização"/>
           </button>
         </div>
       </div>
-
       <div class="password-field-group">
         <label>Nova senha</label>
         <div class="password-field">
-          <input
-            class="profile-input password-input"
-            [type]="showNewPassword ? 'text' : 'password'"
-            [(ngModel)]="newPassword"
-            placeholder="Digite a nova senha"
-          />
+          <input class="profile-input password-input" [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="newPassword" placeholder="Digite a nova senha"/>
           <button class="password-toggle" type="button" (click)="toggleNewPassword()">
-            <img
-              [src]="showNewPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'"
-              alt="Alternar visualização"
-            />
+            <img [src]="showNewPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'" alt="Alternar visualização"/>
           </button>
         </div>
       </div>
-
       <div class="password-field-group">
         <label>Confirmar nova senha</label>
         <div class="password-field">
-          <input
-            class="profile-input password-input"
-            [type]="showConfirmNewPassword ? 'text' : 'password'"
-            [(ngModel)]="confirmNewPassword"
-            placeholder="Confirme a nova senha"
-          />
+          <input class="profile-input password-input" [type]="showConfirmNewPassword ? 'text' : 'password'" [(ngModel)]="confirmNewPassword" placeholder="Confirme a nova senha"/>
           <button class="password-toggle" type="button" (click)="toggleConfirmNewPassword()">
-            <img
-              [src]="showConfirmNewPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'"
-              alt="Alternar visualização"
-            />
+            <img [src]="showConfirmNewPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'" alt="Alternar visualização"/>
           </button>
         </div>
       </div>
-
       <div class="password-actions">
         <button class="profile-btn ghost" type="button" (click)="cancelPasswordEdit()" [disabled]="passwordSaving">
           Cancelar
@@ -234,64 +150,28 @@
       </div>
     </div>
   </section>
-
   <section class="profile-footer-note" *ngIf="!loading">
     Esta área agora reflete as informações do usuário autenticado.
   </section>
-
-  <div
-    class="photo-modal-backdrop"
-    *ngIf="cropModalOpen"
-    (click)="closeCropModal()"
-  ></div>
-
-  <div
-    class="photo-modal"
-    *ngIf="cropModalOpen"
-    (click)="$event.stopPropagation()"
-  >
+  <div class="photo-modal-backdrop" *ngIf="cropModalOpen" (click)="closeCropModal()"></div>
+  <div class="photo-modal" *ngIf="cropModalOpen" (click)="$event.stopPropagation()">
     <div class="photo-modal-head">
       <h2>Ajustar foto</h2>
       <button type="button" class="photo-modal-close" (click)="closeCropModal()">✕</button>
     </div>
-
     <p class="photo-modal-subtitle">
       Arraste a imagem e ajuste o zoom para definir exatamente o que será exibido.
     </p>
-
-    <div
-      class="photo-crop-stage"
-      (mousedown)="startDrag($event)"
-      (touchstart)="startDrag($event)"
-    >
-      <img
-        *ngIf="imageToCrop"
-        class="photo-crop-image"
-        [src]="imageToCrop"
-        [style.width.px]="cropBaseWidth"
-        [style.height.px]="cropBaseHeight"
-        [style.transform]="cropImageTransform"
-        alt="Pré-visualização da foto"
-        draggable="false"
-      />
+    <div class="photo-crop-stage" (mousedown)="startDrag($event)" (touchstart)="startDrag($event)">
+      <img *ngIf="imageToCrop" class="photo-crop-image" [src]="imageToCrop" [style.width.px]="cropBaseWidth" [style.height.px]="cropBaseHeight" [style.transform]="cropImageTransform" alt="Pré-visualização da foto" draggable="false"/>
       <div class="photo-crop-ring"></div>
     </div>
-
     <div class="photo-controls">
       <div class="photo-control">
         <label for="zoomRange">Zoom</label>
-        <input
-          id="zoomRange"
-          type="range"
-          min="1"
-          max="3"
-          step="0.01"
-          [(ngModel)]="cropZoom"
-          (ngModelChange)="onZoomChange()"
-        />
+        <input id="zoomRange" type="range" min="1" max="3" step="0.01" [(ngModel)]="cropZoom" (ngModelChange)="onZoomChange()"/>
       </div>
     </div>
-
     <div class="photo-modal-actions">
       <button type="button" class="photo-btn secondary" (click)="closeCropModal()">
         Cancelar

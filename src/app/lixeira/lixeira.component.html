@@ -2,33 +2,19 @@
   <div class="page-shell">
     <div class="page-head">
       <h2>lixeira</h2>
-
-      <input
-        class="search-input"
-        type="text"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="onSearchChange()"
-        placeholder="Pesquisar por título, descrição ou data"
-      />
+      <input class="search-input" type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Pesquisar por título, descrição ou data"/>
     </div>
-
     <div class="group-list" *ngIf="groups.length; else empty">
       <section class="date-group" *ngFor="let group of groups">
         <div class="date-label">{{ group.label }}</div>
-
         <div class="trash-list">
-          <div
-            class="trash-card"
-            *ngFor="let note of group.items; trackBy: trackById"
-            (click)="openNote(note)"
-          >
+          <div class="trash-card" *ngFor="let note of group.items; trackBy: trackById" (click)="openNote(note)">
             <div class="trash-main">
               <div class="trash-texts">
                 <div class="trash-title">{{ note.title }}</div>
                 <div class="trash-desc" *ngIf="note.description">{{ note.description }}</div>
                 <div class="trash-date">Data da nota: {{ note.date }}</div>
               </div>
-
               <div class="trash-actions">
                 <button type="button" class="neutral" (click)="restore(note.id); $event.stopPropagation()">Restaurar</button>
                 <button type="button" class="danger" (click)="deleteForever(note.id); $event.stopPropagation()">Excluir permanentemente</button>
@@ -38,36 +24,28 @@
         </div>
       </section>
     </div>
-
     <ng-template #empty>
       <div class="empty-box">Nenhuma nota na lixeira.</div>
     </ng-template>
   </div>
 </div>
-
 <div class="note-backdrop" *ngIf="showModal" (click)="closeModal()"></div>
-
 <div class="note-modal" *ngIf="showModal && selectedNote" (click)="$event.stopPropagation()">
   <div class="note-modal-head">
     <h3 class="note-modal-title">lixeira</h3>
     <button type="button" class="note-modal-close" (click)="closeModal()">✕</button>
   </div>
-
   <div class="note-meta">
     <span class="note-pill">{{ selectedNote.date }}</span>
     <span class="note-pill state-pill">Excluída</span>
   </div>
-
   <div class="note-view-title">{{ selectedNote.title }}</div>
-
   <div class="note-view-description" *ngIf="selectedNote.description; else noDesc">
     {{ selectedNote.description }}
   </div>
-
   <ng-template #noDesc>
     <div class="note-view-description empty">Sem descrição.</div>
   </ng-template>
-
   <div class="note-modal-actions">
     <button type="button" class="action-btn neutral" (click)="closeModal()">Fechar</button>
     <button type="button" class="action-btn neutral" (click)="restore(selectedNote.id)">Recuperar</button>
