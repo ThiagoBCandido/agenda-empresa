@@ -1,6 +1,7 @@
 <div class="session-message" *ngIf="!isAuthenticated && sessionMessage">{{ sessionMessage }}</div>
-<app-login *ngIf="!isAuthenticated && authMode === 'login'" (loggedIn)="handleLoggedIn()" (goToRegister)="showRegister()"></app-login>
-<app-register *ngIf="!isAuthenticated && authMode === 'register'" (registered)="handleRegistered()" (goToLogin)="showLogin()"></app-register>
+
+<app-login *ngIf="!isAuthenticated && authMode === 'login'"></app-login>
+<app-register *ngIf="!isAuthenticated && authMode === 'register'"></app-register>
 
 <ng-container *ngIf="isAuthenticated">
   <div class="app-shell" (click)="closePriorityMenu()">

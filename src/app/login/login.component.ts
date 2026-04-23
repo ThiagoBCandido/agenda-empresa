@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 
 @Component({
@@ -12,9 +13,7 @@ import { AuthService } from '../core/services/auth.service';
 })
 export class LoginComponent {
   private authService = inject(AuthService);
-
-  @Output() loggedIn = new EventEmitter<void>();
-  @Output() goToRegister = new EventEmitter<void>();
+  private router = inject(Router);
 
   email = '';
   password = '';
@@ -24,6 +23,10 @@ export class LoginComponent {
 
   togglePassword() {
     this.showPassword = !this.showPassword;
+  }
+
+  goToRegister() {
+    this.router.navigateByUrl('/register');
   }
 
   submit() {
@@ -42,7 +45,7 @@ export class LoginComponent {
     }).subscribe({
       next: () => {
         this.loading = false;
-        this.loggedIn.emit();
+        this.router.navigateByUrl('/app');
       },
       error: (err) => {
         this.loading = false;
