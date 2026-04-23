@@ -1,0 +1,76 @@
+<div class="history-page">
+  <div class="page-shell">
+    <div class="page-head">
+      <h2>concluídos</h2>
+
+      <input
+        class="search-input"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Pesquisar por título, descrição ou data"
+      />
+    </div>
+
+    <div class="group-list" *ngIf="groups.length; else empty">
+      <section class="date-group" *ngFor="let group of groups">
+        <div class="date-label">{{ group.label }}</div>
+
+        <div class="history-list">
+          <div
+            class="history-card"
+            *ngFor="let note of group.items; trackBy: trackById"
+            (click)="openNote(note)"
+          >
+            <div class="history-main">
+              <div class="history-texts">
+                <div class="history-title">{{ note.title }}</div>
+                <div class="history-desc" *ngIf="note.description">{{ note.description }}</div>
+                <div class="history-date">Data da nota: {{ note.date }}</div>
+              </div>
+
+              <div class="history-actions">
+                <button type="button" class="neutral" (click)="markAsPending(note.id); $event.stopPropagation()">Voltar</button>
+                <button type="button" class="danger" (click)="moveToTrash(note.id); $event.stopPropagation()">Lixeira</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <ng-template #empty>
+      <div class="empty-box">Nenhuma tarefa concluída encontrada.</div>
+    </ng-template>
+  </div>
+</div>
+
+<div class="note-backdrop" *ngIf="showModal" (click)="closeModal()"></div>
+
+<div class="note-modal" *ngIf="showModal && selectedNote" (click)="$event.stopPropagation()">
+  <div class="note-modal-head">
+    <h3 class="note-modal-title">concluída</h3>
+    <button type="button" class="note-modal-close" (click)="closeModal()">✕</button>
+  </div>
+
+  <div class="note-meta">
+    <span class="note-pill">{{ selectedNote.date }}</span>
+    <span class="note-pill state-pill">Concluída</span>
+  </div>
+
+  <div class="note-view-title">{{ selectedNote.title }}</div>
+
+  <div class="note-view-description" *ngIf="selectedNote.description; else noDesc">
+    {{ selectedNote.description }}
+  </div>
+
+  <ng-template #noDesc>
+    <div class="note-view-description empty">Sem descrição.</div>
+  </ng-template>
+
+  <div class="note-modal-actions">
+    <button type="button" class="action-btn neutral" (click)="closeModal()">Fechar</button>
+    <button type="button" class="action-btn neutral" (click)="markAsPending(selectedNote.id)">Recuperar</button>
+    <button type="button" class="action-btn danger" (click)="moveToTrash(selectedNote.id)">Lixeira</button>
+  </div>
+</div>

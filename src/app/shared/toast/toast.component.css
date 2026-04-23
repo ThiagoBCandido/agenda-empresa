@@ -1,0 +1,58 @@
+.toast-stack {
+    position: fixed;
+    top: 78px;
+    right: 18px;
+    display: grid;
+    gap: 10px;
+    z-index: 9999;
+    width: min(360px, calc(100vw - 36px));
+}
+
+.toast {
+    border-radius: 14px;
+    padding: 12px 12px 10px;
+    border: 1px solid rgba(82, 183, 136, 0.18);
+    background: radial-gradient(900px 220px at 10% 0%, rgba(82, 183, 136, 0.18), transparent 55%),
+                linear-gradient(180deg, rgba(17, 22, 21, 0.92), rgba(9, 12, 11, 0.92));
+    box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+    color: #e9f5ef;
+}
+
+.toast-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #52b788;
+    box-shadow: 0 0 12px rgba(82, 183, 136, 0.35);
+}
+
+.title {
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.close {
+    margin-left: auto;
+    background: transparent;
+    border: 0;
+    color: #b7c4c0;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 10px;
+}
+
+.close:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.toast[data-type="success"] .dot{ background:#52b788; }
+.toast[data-type="warning"] .dot{ background:#f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.25); }
+.toast[data-type="danger"] .dot{ background:#ef4444; box-shadow: 0 0 12px rgba(239,68,68,0.25); }
+.toast[data-type="info"] .dot{ background:#60a5fa; box-shadow: 0 0 12px rgba(96,165,250,0.25); }

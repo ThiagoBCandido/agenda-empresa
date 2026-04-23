@@ -1,0 +1,124 @@
+<div class="notes-root">
+  <h2 class="notes-title">anotações</h2>
+
+  <div class="notes-list" *ngIf="notes.length > 0; else emptyState">
+    <div
+      class="note-card"
+      *ngFor="let note of notes; trackBy: trackById"
+      [class.high]="note.priority === 'alta' && !note.done"
+      [class.medium]="note.priority === 'media' && !note.done"
+      [class.low]="note.priority === 'baixa' && !note.done"
+      [class.done]="note.done"
+      (click)="openNote(note)"
+    >
+      <div class="note-main">
+        <div class="note-texts">
+          <div class="note-title-row">{{ note.title }}</div>
+          <div class="note-desc" *ngIf="note.description">{{ note.description }}</div>
+          <div class="note-date">{{ note.date }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">Nenhuma anotação criada ainda.</div>
+  </ng-template>
+
+  <div class="note-backdrop" *ngIf="showModal" (click)="closeModal()"></div>
+
+  <div class="note-modal" *ngIf="showModal && selectedNote" (click)="$event.stopPropagation()">
+    <div class="note-modal-head">
+      <h3 class="note-modal-title">anotação</h3>
+      <button type="button" class="note-modal-close" (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="note-meta">
+      <span class="note-pill">{{ selectedNote.date }}</span>
+      <span
+        class="note-pill priority"
+        [class.high]="selectedNote.priority === 'alta' && !selectedNote.done"
+        [class.medium]="selectedNote.priority === 'media' && !selectedNote.done"
+        [class.low]="selectedNote.priority === 'baixa' && !selectedNote.done"
+        [class.done]="selectedNote.done"
+      >
+        {{
+          selectedNote.done
+            ? 'Concluída'
+            : selectedNote.priority === 'alta'
+              ? 'Alta'
+              : selectedNote.priority === 'media'
+                ? 'Média'
+                : 'Baixa'
+        }}
+      </span>
+    </div>
+
+    <div class="note-modal-body" *ngIf="!isEditing">
+      <div class="note-view-title">{{ selectedNote.title }}</div>
+      <div class="note-view-description" *ngIf="selectedNote.description; else noDesc">
+        {{ selectedNote.description }}
+      </div>
+
+      <ng-template #noDesc>
+        <div class="note-view-description empty">Sem descrição.</div>
+      </ng-template>
+    </div>
+
+    <div class="note-modal-body" *ngIf="isEditing">
+      <div class="modal-priority-switch">
+        <button
+          type="button"
+          class="modal-priority-btn high"
+          [class.active]="draftPriority === 'alta'"
+          (click)="draftPriority = 'alta'"
+        >
+          Alta
+        </button>
+
+        <button
+          type="button"
+          class="modal-priority-btn medium"
+          [class.active]="draftPriority === 'media'"
+          (click)="draftPriority = 'media'"
+        >
+          Média
+        </button>
+
+        <button
+          type="button"
+          class="modal-priority-btn low"
+          [class.active]="draftPriority === 'baixa'"
+          (click)="draftPriority = 'baixa'"
+        >
+          Baixa
+        </button>
+      </div>
+
+      <input
+        class="note-input"
+        [(ngModel)]="draftTitle"
+        placeholder="Título"
+      />
+
+      <textarea
+        class="note-textarea"
+        [(ngModel)]="draftDescription"
+        placeholder="Anotação"
+      ></textarea>
+    </div>
+
+    <div class="note-modal-actions" *ngIf="!isEditing">
+      <button type="button" class="action-btn danger" (click)="deleteSelected()">Excluir</button>
+      <button type="button" class="action-btn neutral" (click)="startEdit()">Editar</button>
+      <button type="button" class="action-btn success" (click)="toggleDoneSelected()">
+        {{ selectedNote.done ? 'Marcar como pendente' : 'Concluir tarefa' }}
+      </button>
+    </div>
+
+    <div class="note-modal-actions" *ngIf="isEditing">
+      <button type="button" class="action-btn neutral" (click)="cancelEdit()">Cancelar</button>
+      <button type="button" class="action-btn success" (click)="saveEdit()">Salvar edição</button>
+    </div>
+  </div>
+</div>

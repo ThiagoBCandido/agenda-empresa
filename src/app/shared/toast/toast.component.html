@@ -1,0 +1,10 @@
+<div class="toast-stack">
+    <div class="toast" *ngFor="let t of (toast.toasts$ | async)" [attr.data-type]="t.type">
+        <div class="toast-head">
+            <div class="dot"></div>
+            <div class="title">{{ t.title }}</div>
+            <button class="close" (click)="dismiss(t.id)">X</button>
+        </div>
+        <div class="msg" *ngIf="t.message">{{ t.message }}</div>
+    </div>
+</div>
