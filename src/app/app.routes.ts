@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-import { AppComponent } from './app.component';
-import { AppShellComponent } from './app-shell/app-shell.component';
 
 export const routes: Routes = [
   {
@@ -11,15 +9,18 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    component: AppComponent
+    loadComponent: () =>
+      import('./login/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'register',
-    component: AppComponent
+    loadComponent: () =>
+      import('./register/register.component').then(m => m.RegisterComponent)
   },
   {
     path: 'app',
-    component: AppShellComponent,
+    loadComponent: () =>
+      import('./app-shell/app-shell.component').then(m => m.AppShellComponent),
     canActivate: [authGuard]
   },
   {
