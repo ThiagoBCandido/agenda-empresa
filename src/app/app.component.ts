@@ -251,8 +251,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   themeIcon() {
     return this.theme === 'dark'
-      ? 'assets/icons/icon-sun.png'
-      : 'assets/icons/icon-moon.png';
+      ? 'assets/icons/icon-sun.svg'
+      : 'assets/icons/icon-moon.svg';
   }
 
   themeAlt() {

@@ -1,7 +1,7 @@
 <div class="login-page">
   <div class="login-card">
     <div class="brand">
-      <img src="assets/logo2.png" alt="Logo" class="brand-logo" />
+      <img src="assets/logo2.svg" alt="Logo" class="brand-logo" />
       <h1>Notes</h1>
       <p>Entre para acessar suas anotações</p>
     </div>
@@ -14,7 +14,7 @@
       <div class="password-field">
         <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" (ngModelChange)="clearError()" placeholder="Digite sua senha" (keyup.enter)="submit()" autocomplete="current-password"/>
         <button class="password-toggle" type="button" (click)="togglePassword()" [disabled]="loading" [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'" [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
-          <img [src]="showPassword ? 'assets/icons/eye-open.png' : 'assets/icons/eye-closed.png'" [alt]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"/>
+          <img [src]="showPassword ? 'assets/icons/eye-open.svg' : 'assets/icons/eye-closed.svg'" [alt]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"/>
         </button>
       </div>
     </div>

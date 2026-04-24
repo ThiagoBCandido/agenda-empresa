@@ -454,7 +454,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
       ctx.restore();
 
-      const finalImage = canvas.toDataURL('image/png');
+      const finalImage = canvas.toDataURL('image/svg');
 
       this.authService.updateProfilePhoto({ profilePhoto: finalImage }).subscribe({
         next: (data) => {
