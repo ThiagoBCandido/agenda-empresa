@@ -8,8 +8,8 @@ export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
   const backendBaseUrl =
     window.location.hostname === 'localhost'
-      ? 'http://localhost:8080'
-      : 'https://SEU-BACKEND.onrender.com';
+  ? 'http://localhost:8080'
+  : 'https://agenda-empresa-backend.onrender.com';
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {

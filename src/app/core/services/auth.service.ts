@@ -69,8 +69,8 @@ export class AuthService {
 
   private backendBaseUrl =
     window.location.hostname === 'localhost'
-      ? 'http://localhost:8080'
-      : 'https://SEU-BACKEND.onrender.com';
+  ? 'http://localhost:8080'
+  : 'https://agenda-empresa-backend.onrender.com';
 
   private apiUrl = `${this.backendBaseUrl}/auth`;
 
