@@ -29,7 +29,7 @@
   <div class="main-area">
     <header class="topbar" (click)="$event.stopPropagation()">
       <div class="brand">
-        <img class="brand-logo" src="assets/logo2.svg" alt="Logo Notes" />
+        <img class="brand-logo" src="assets/logo2.png" alt="Logo Notes" />
         <div class="user-badge">
           <div class="user-avatar-mini" *ngIf="currentUserPhoto; else fallbackTopAvatar">
             <img [src]="currentUserPhoto" alt="Foto de perfil" />
@@ -79,7 +79,7 @@
           </div>
           <div class="tampa" aria-hidden="true" (click)="toggleCoverSide()" title="Alternar entre calendário e anotações">
             <div class="tampa-inner">
-              <img class="logo" src="assets/logo.svg" alt="Logo" />
+              <img class="logo" src="assets/logo.png" alt="Logo" />
             </div>
           </div>
         </div>
