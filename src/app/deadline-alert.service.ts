@@ -30,6 +30,10 @@ export class DeadlineAlertService {
       window.clearInterval(this.intervalId);
       this.intervalId = null;
     }
+
+    this.checking = false;
+    this.queue = [];
+    this.currentAlertSubject.next(null);
   }
 
   dismiss() {
