@@ -1,17 +1,23 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Compiled output
+# ==== Compiled output ====
 /dist
 /tmp
 /out-tsc
 /bazel-out
 
-# Node
+# ==== Node =====
 /node_modules
 npm-debug.log
 yarn-error.log
 
-# IDEs and editors
+# ===== Angular =====
+node_modules/
+dist/
+.angular/
+coverage/
+
+# ==== IDEs and editors ====
 .idea/
 .project
 .classpath
@@ -20,15 +26,17 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
+# ===== Visual Studio Code =====
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
+.DS_Store
+Thumbs.db
 
-# Miscellaneous
+# ===== Miscellaneous ====
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -37,6 +45,21 @@ yarn-error.log
 testem.log
 /typings
 
-# System files
+# ===== System files =====
 .DS_Store
 Thumbs.db
+
+# ===== Spring Boot / Java =====
+backend/target/
+*.class
+*.log
+
+# ===== local =====
+.env
+.env.*
+*.pem
+*.key
+
+# ===== configs =====
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-dev.properties
