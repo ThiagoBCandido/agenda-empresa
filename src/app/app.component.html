@@ -10,30 +10,30 @@
         <span></span>
       </button>
       <button class="side-item" [class.active]="activePage === 'principal'" type="button" (click)="setPage('principal')">
-        <img class="side-icon" src="/assets/icons/icon-home.png" alt="Menu principal" />
+        <img class="side-icon" src="assets/icons/icon-home.png" alt="Menu principal" />
         <span class="side-label" *ngIf="!sidebarCollapsed">Menu principal</span>
       </button>
       <button class="side-item" [class.active]="activePage === 'concluidos'" type="button" (click)="setPage('concluidos')">
-        <img class="side-icon" src="/assets/icons/icon-done.png" alt="Concluídos" />
+        <img class="side-icon" src="assets/icons/icon-done.png" alt="Concluídos" />
         <span class="side-label" *ngIf="!sidebarCollapsed">Concluídos</span>
       </button>
       <button class="side-item" [class.active]="activePage === 'lixeira'" type="button" (click)="setPage('lixeira')">
-        <img class="side-icon" src="/assets/icons/icon-trash.png" alt="Lixeira" />
+        <img class="side-icon" src="assets/icons/icon-trash.png" alt="Lixeira" />
         <span class="side-label" *ngIf="!sidebarCollapsed">Lixeira</span>
       </button>
       <button class="side-item" [class.active]="activePage === 'perfil'" type="button" (click)="setPage('perfil')">
-        <img class="side-icon" src="/assets/icons/icon-profile.png" alt="Perfil" />
+        <img class="side-icon" src="assets/icons/icon-profile.png" alt="Perfil" />
         <span class="side-label" *ngIf="!sidebarCollapsed">Perfil</span>
       </button>
       <button class="side-item logout" type="button" (click)="logout()">
-        <img class="side-icon" src="/assets/icons/icon-exit.png" alt="Sair" />
+        <img class="side-icon" src="assets/icons/icon-exit.png" alt="Sair" />
         <span class="side-label" *ngIf="!sidebarCollapsed">Sair</span>
       </button>
     </aside>
     <div class="main-area">
       <header class="topbar" (click)="$event.stopPropagation()">
         <div class="brand">
-          <img class="brand-logo" src="/assets/logo2.png" alt="Logo Notes" />
+          <img class="brand-logo" src="assets/logo2.png" alt="Logo Notes" />
          <div class="user-badge" *ngIf="isAuthenticated">
             <div class="user-avatar-mini" *ngIf="currentUserPhoto; else fallbackTopAvatar">
               <img [src]="currentUserPhoto" alt="Foto de perfil" />
