@@ -66,7 +66,13 @@ export interface AuthMeResponse {
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/auth';
+
+  private backendBaseUrl =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:8080'
+      : 'https://SEU-BACKEND.onrender.com';
+
+  private apiUrl = `${this.backendBaseUrl}/auth`;
 
   private readonly TOKEN_KEY = 'agenda_token';
   private readonly USER_KEY = 'agenda_user';
@@ -82,8 +88,8 @@ export class AuthService {
   login(data: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
       tap((response) => {
-        this.clearSessionMessage();
-        this.saveSession(response);
+        this.unauthorizedHandled = false;
+        this.setSession(response);
       })
     );
   }
@@ -91,57 +97,134 @@ export class AuthService {
   register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
       tap((response) => {
-        this.clearSessionMessage();
-        this.saveSession(response);
+        this.unauthorizedHandled = false;
+        this.setSession(response);
       })
     );
   }
 
-  getMe(): Observable<AuthMeResponse> {
-    return this.http.get<AuthMeResponse>(`${this.apiUrl}/me`);
-  }
-
   refreshMe(): Observable<AuthMeResponse> {
-    return this.getMe().pipe(
-      tap((data) => this.updateStoredUserFromMe(data))
+    return this.http.get<AuthMeResponse>(`${this.apiUrl}/me`).pipe(
+      tap((me) => {
+        const current = this.currentUserSubject.value;
+        if (!current) return;
+
+        const merged: AuthResponse = {
+          ...current,
+          id: me.id,
+          name: me.name,
+          email: me.email,
+          role: me.role,
+          jobTitle: me.jobTitle,
+          timeZone: me.timeZone,
+          notificationsEnabled: me.notificationsEnabled,
+          preferredTheme: me.preferredTheme,
+          profilePhoto: me.profilePhoto
+        };
+
+        this.persistUserOnly(merged);
+      })
     );
   }
 
-  updateMe(data: UpdateProfileRequest): Observable<AuthResponse> {
-    return this.http.put<AuthResponse>(`${this.apiUrl}/me`, data).pipe(
-      tap((response) => this.saveSession(response))
+  updateProfile(data: UpdateProfileRequest): Observable<AuthMeResponse> {
+    return this.http.put<AuthMeResponse>(`${this.apiUrl}/me`, data).pipe(
+      tap((me) => {
+        const current = this.currentUserSubject.value;
+        if (!current) return;
+
+        const merged: AuthResponse = {
+          ...current,
+          id: me.id,
+          name: me.name,
+          email: me.email,
+          role: me.role,
+          jobTitle: me.jobTitle,
+          timeZone: me.timeZone,
+          notificationsEnabled: me.notificationsEnabled,
+          preferredTheme: me.preferredTheme,
+          profilePhoto: me.profilePhoto
+        };
+
+        this.persistUserOnly(merged);
+      })
     );
   }
 
-  changePassword(data: ChangePasswordRequest): Observable<AuthResponse> {
-    return this.http.put<AuthResponse>(`${this.apiUrl}/me/password`, data).pipe(
-      tap((response) => this.saveSession(response))
-    );
+  changePassword(data: ChangePasswordRequest): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.apiUrl}/me/password`, data);
   }
 
   updateProfilePhoto(data: UpdateProfilePhotoRequest): Observable<AuthMeResponse> {
     return this.http.put<AuthMeResponse>(`${this.apiUrl}/me/photo`, data).pipe(
-      tap((response) => this.updateStoredUserFromMe(response))
+      tap((me) => {
+        const current = this.currentUserSubject.value;
+        if (!current) return;
+
+        const merged: AuthResponse = {
+          ...current,
+          id: me.id,
+          name: me.name,
+          email: me.email,
+          role: me.role,
+          jobTitle: me.jobTitle,
+          timeZone: me.timeZone,
+          notificationsEnabled: me.notificationsEnabled,
+          preferredTheme: me.preferredTheme,
+          profilePhoto: me.profilePhoto
+        };
+
+        this.persistUserOnly(merged);
+      })
     );
   }
 
-  updateThemePreference(theme: 'dark' | 'light'): Observable<AuthMeResponse> {
-    const payload: UpdateThemeRequest = {
-      preferredTheme: theme
-    };
+  updateThemePreference(preferredTheme: 'dark' | 'light'): Observable<AuthMeResponse> {
+    return this.http.put<AuthMeResponse>(`${this.apiUrl}/me/theme`, { preferredTheme }).pipe(
+      tap((me) => {
+        const current = this.currentUserSubject.value;
+        if (!current) return;
 
-    return this.http.put<AuthMeResponse>(`${this.apiUrl}/me/theme`, payload).pipe(
-      tap((data) => this.updateStoredUserFromMe(data))
+        const merged: AuthResponse = {
+          ...current,
+          id: me.id,
+          name: me.name,
+          email: me.email,
+          role: me.role,
+          jobTitle: me.jobTitle,
+          timeZone: me.timeZone,
+          notificationsEnabled: me.notificationsEnabled,
+          preferredTheme: me.preferredTheme,
+          profilePhoto: me.profilePhoto
+        };
+
+        this.persistUserOnly(merged);
+      })
     );
   }
 
-  logout(clearSessionMessage = true) {
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  getCurrentUser(): AuthResponse | null {
+    return this.currentUserSubject.value;
+  }
+
+  logout(setMessage = false) {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
+    this.unauthorizedHandled = false;
 
-    if (clearSessionMessage) {
-      this.clearSessionMessage();
+    if (setMessage) {
+      this.sessionMessageSubject.next('Sua sessão expirou. Faça login novamente.');
+    } else {
+      this.sessionMessageSubject.next('');
     }
   }
 
@@ -149,76 +232,34 @@ export class AuthService {
     if (this.unauthorizedHandled) return;
 
     this.unauthorizedHandled = true;
-    this.logout(false);
-    this.sessionMessageSubject.next('Sua sessão expirou. Faça login novamente.');
-
-    setTimeout(() => {
-      this.unauthorizedHandled = false;
-    }, 300);
+    this.logout(true);
   }
 
   clearSessionMessage() {
     this.sessionMessageSubject.next('');
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getToken();
-  }
-
-  getUser(): AuthResponse | null {
-    return this.currentUserSubject.value;
-  }
-
-  getUserName(): string {
-    return this.getUser()?.name ?? '';
-  }
-
-  getUserEmail(): string {
-    return this.getUser()?.email ?? '';
-  }
-
-  getUserRole(): string {
-    return this.getUser()?.role ?? '';
-  }
-
-  getUserPhoto(): string | null {
-    return this.getUser()?.profilePhoto ?? null;
-  }
-
-  updateStoredUserFromMe(data: AuthMeResponse) {
-    const current = this.getUser();
-
-    if (!current) return;
-
-    const updated: AuthResponse = {
-      ...current,
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      jobTitle: data.jobTitle,
-      timeZone: data.timeZone,
-      notificationsEnabled: data.notificationsEnabled,
-      preferredTheme: data.preferredTheme,
-      profilePhoto: data.profilePhoto
-    };
-
-    localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
-    this.currentUserSubject.next(updated);
-  }
-
-  private saveSession(response: AuthResponse) {
+  private setSession(response: AuthResponse) {
     localStorage.setItem(this.TOKEN_KEY, response.token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(response));
     this.currentUserSubject.next(response);
+    this.sessionMessageSubject.next('');
+  }
+
+  private persistUserOnly(user: AuthResponse) {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.currentUserSubject.next(user);
   }
 
   private readStoredUser(): AuthResponse | null {
     const raw = localStorage.getItem(this.USER_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+
+    try {
+      return JSON.parse(raw) as AuthResponse;
+    } catch {
+      localStorage.removeItem(this.USER_KEY);
+      return null;
+    }
   }
 }

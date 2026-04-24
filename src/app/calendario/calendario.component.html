@@ -27,20 +27,20 @@
     </div>
     <div class="range-grid">
       <div class="range-field">
-        <label>Data</label>
-        <input type="date" [(ngModel)]="draftStartDate" [disabled]="!allowDateEdit"/>
+        <label>Data inicial</label>
+        <input type="date" [(ngModel)]="draftStartDate" />
       </div>
       <div class="range-field">
         <label>Hora inicial</label>
-        <input type="time" [(ngModel)]="draftStartTime"/>
+        <input type="time" [(ngModel)]="draftStartTime" />
       </div>
       <div class="range-field">
         <label>Data final</label>
-        <input type="date" [(ngModel)]="draftEndDate" [disabled]="!allowDateEdit"/>
+        <input type="date" [(ngModel)]="draftEndDate" />
       </div>
       <div class="range-field">
         <label>Hora final</label>
-        <input type="time" [(ngModel)]="draftEndTime"/>
+        <input type="time" [(ngModel)]="draftEndTime" />
       </div>
     </div>
     <div class="editor-fields">
@@ -50,26 +50,34 @@
     <div class="modal-actions">
       <button class="btn-secondary" type="button" (click)="closeModal()">Cancelar</button>
       <button class="btn-secondary" type="button" *ngIf="isEditing && editingId" (click)="saveAndComplete()">Atualizar e concluir</button>
-      <button class="btn-primary" type="button" (click)="save()">
-        {{ isEditing ? 'Atualizar' : 'Salvar' }}
-      </button>
+      <button class="btn-primary" type="button" (click)="save()">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
     </div>
     <div class="divider"></div>
-    <div class="list-title" *ngIf="selectedDate">Anotações deste dia</div>
+    <div class="list-title" *ngIf="selectedDate">
+      Anotações deste dia
+    </div>
     <div class="empty" *ngIf="selectedDate && !notesOfSelectedDay.length">
       Nenhuma anotação ativa para este dia.
     </div>
     <div class="day-list" *ngIf="selectedDate && notesOfSelectedDay.length">
       <div class="day-item" *ngFor="let note of notesOfSelectedDay" [class.marked]="pendingActions.has(note.id)">
-        <div class="day-item-title">{{ note.title || 'Sem título' }}</div>
+        <div class="day-item-title">
+          {{ note.title || 'Sem título' }}
+        </div>
         <div class="day-item-desc" *ngIf="note.description">
           {{ note.description }}
         </div>
         <div class="day-item-desc">
           <span>{{ note.date }}</span>
-          <span *ngIf="note.endDate && note.endDate !== note.date"> • até {{ note.endDate }}</span>
-          <span *ngIf="note.startTime"> • início {{ note.startTime }}</span>
-          <span *ngIf="note.endTime"> • fim {{ note.endTime }}</span>
+          <span *ngIf="note.endDate && note.endDate !== note.date">
+            • até {{ note.endDate }}
+          </span>
+          <span *ngIf="note.startTime">
+            • início {{ note.startTime }}
+          </span>
+          <span *ngIf="note.endTime">
+            • fim {{ note.endTime }}
+          </span>
         </div>
         <div class="row">
           <button class="mini success" type="button" [class.pending]="isPending(note.id, 'done')" (click)="completeFromList(note.id)">

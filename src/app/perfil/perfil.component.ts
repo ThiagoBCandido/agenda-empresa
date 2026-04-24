@@ -2,13 +2,18 @@ import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import {AuthService, UpdateProfileRequest, ChangePasswordRequest } from '../core/services/auth.service';
+import {
+  AuthService,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  AuthMeResponse
+} from '../core/services/auth.service';
 import { ThemeService, AppTheme } from '../core/services/theme.service';
 
-type TimeZoneOption = { 
+type TimeZoneOption = {
   value: string;
-  label: string; 
-}
+  label: string;
+};
 
 const TIME_ZONE_OPTIONS: TimeZoneOption[] = [
   { value: 'America/Sao_Paulo', label: 'Brasil - São Paulo (GMT-3)' },
@@ -38,6 +43,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
 
   private themeSub?: Subscription;
+
   userName = '';
   userEmail = '';
   userRole = '';
@@ -45,17 +51,20 @@ export class PerfilComponent implements OnInit, OnDestroy {
   timeZone = 'America/Sao_Paulo';
   notificationsEnabled = true;
   preferredTheme: AppTheme = 'dark';
+
   loading = true;
   saving = false;
   errorMessage = '';
   successMessage = '';
   editMode = false;
+
   formName = '';
   formEmail = '';
   formJobTitle = 'Colaborador';
   formTimeZone = 'America/Sao_Paulo';
   formNotificationsEnabled = true;
   formPreferredTheme: AppTheme = 'dark';
+
   passwordEditMode = false;
   passwordSaving = false;
   passwordErrorMessage = '';
@@ -63,9 +72,11 @@ export class PerfilComponent implements OnInit, OnDestroy {
   currentPassword = '';
   newPassword = '';
   confirmNewPassword = '';
+
   showCurrentPassword = false;
   showNewPassword = false;
   showConfirmNewPassword = false;
+
   profilePhoto: string | null = null;
   cropModalOpen = false;
   imageToCrop: string | null = null;
@@ -125,33 +136,30 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.authService.getMe().subscribe({
-      next: (data) => {
-        this.userName = data.name || 'Usuário';
-        this.userEmail = data.email || 'usuario@empresa.com';
-        this.userRole = this.mapRole(data.role);
-        this.jobTitle = data.jobTitle || 'Colaborador';
-        this.timeZone = data.timeZone || 'America/Sao_Paulo';
-        this.notificationsEnabled = data.notificationsEnabled ?? true;
-        this.preferredTheme = this.normalizeTheme(data.preferredTheme);
-        this.profilePhoto = data.profilePhoto ?? null;
+    this.authService.refreshMe().subscribe({
+      next: (data: AuthMeResponse) => {
+        this.applyProfileData(data);
+        this.loading = false;
+      },
+      error: (err: any) => {
+        const storedUser = this.authService.getCurrentUser();
+
+        this.userName = storedUser?.name || 'Usuário';
+        this.userEmail = storedUser?.email || 'usuario@empresa.com';
+        this.userRole = this.mapRole(storedUser?.role || 'USER');
+        this.jobTitle = storedUser?.jobTitle || 'Colaborador';
+        this.timeZone = storedUser?.timeZone || 'America/Sao_Paulo';
+        this.notificationsEnabled = storedUser?.notificationsEnabled ?? true;
+        this.preferredTheme = this.normalizeTheme(storedUser?.preferredTheme);
+        this.profilePhoto = storedUser?.profilePhoto ?? null;
+
         this.formName = this.userName;
         this.formEmail = this.userEmail;
         this.formJobTitle = this.jobTitle;
         this.formTimeZone = this.timeZone;
         this.formNotificationsEnabled = this.notificationsEnabled;
         this.formPreferredTheme = this.preferredTheme;
-        this.themeService.setTheme(this.preferredTheme);
-        this.authService.updateStoredUserFromMe(data);
 
-        this.loading = false;
-      },
-      error: (err) => {
-        this.userName = this.authService.getUserName() || 'Usuário';
-        this.userEmail = this.authService.getUserEmail() || 'usuario@empresa.com';
-        this.userRole = this.mapRole(this.authService.getUserRole());
-        this.formName = this.userName;
-        this.formEmail = this.userEmail;
         this.errorMessage =
           err?.error?.message || 'Não foi possível carregar os dados do perfil.';
         this.loading = false;
@@ -198,33 +206,20 @@ export class PerfilComponent implements OnInit, OnDestroy {
     const payload: UpdateProfileRequest = {
       name: this.formName.trim(),
       email: this.formEmail.trim(),
-      jobTitle: this.formJobTitle.trim(),
-      timeZone: this.formTimeZone.trim(),
+      jobTitle: this.formJobTitle.trim() || 'Colaborador',
+      timeZone: this.formTimeZone.trim() || 'America/Sao_Paulo',
       notificationsEnabled: this.formNotificationsEnabled,
       preferredTheme: this.formPreferredTheme
     };
 
-    this.authService.updateMe(payload).subscribe({
-      next: (response) => {
-        this.userName = response.name;
-        this.userEmail = response.email;
-        this.userRole = this.mapRole(response.role);
-
-        this.jobTitle = this.formJobTitle.trim() || 'Colaborador';
-        this.timeZone = this.formTimeZone.trim() || 'America/Sao_Paulo';
-        this.notificationsEnabled = this.formNotificationsEnabled;
-        this.preferredTheme = this.formPreferredTheme;
-
-        this.formName = response.name;
-        this.formEmail = response.email;
-
+    this.authService.updateProfile(payload).subscribe({
+      next: (response: AuthMeResponse) => {
+        this.applyProfileData(response);
         this.editMode = false;
         this.saving = false;
-        this.successMessage = response.message || 'Perfil atualizado com sucesso.';
-
-        this.themeService.setTheme(this.preferredTheme);
+        this.successMessage = 'Perfil atualizado com sucesso.';
       },
-      error: (err) => {
+      error: (err: any) => {
         this.saving = false;
         this.errorMessage =
           err?.error?.message || 'Não foi possível atualizar o perfil.';
@@ -289,7 +284,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
         this.passwordSuccessMessage = response.message || 'Senha atualizada com sucesso.';
         this.clearPasswordForm();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.passwordSaving = false;
         this.passwordErrorMessage =
           err?.error?.message || 'Não foi possível alterar a senha.';
@@ -434,6 +429,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
       const drawHeight = this.cropBaseHeight * this.cropZoom;
       const drawX = (this.previewSize - drawWidth) / 2 + this.cropOffsetX;
       const drawY = (this.previewSize - drawHeight) / 2 + this.cropOffsetY;
+
       const canvas = document.createElement('canvas');
       canvas.width = outputSize;
       canvas.height = outputSize;
@@ -466,7 +462,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
           this.successMessage = 'Foto de perfil atualizada com sucesso.';
           this.closeCropModal();
         },
-        error: (err) => {
+        error: (err: any) => {
           this.errorMessage =
             err?.error?.message || 'Não foi possível atualizar a foto de perfil.';
         }
@@ -485,7 +481,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
         this.profilePhoto = data.profilePhoto ?? null;
         this.successMessage = 'Foto removida com sucesso.';
       },
-      error: (err) => {
+      error: (err: any) => {
         this.errorMessage =
           err?.error?.message || 'Não foi possível remover a foto.';
       }
@@ -519,5 +515,25 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   private normalizeTheme(value: string | null | undefined): AppTheme {
     return value === 'light' ? 'light' : 'dark';
+  }
+
+  private applyProfileData(data: AuthMeResponse) {
+    this.userName = data.name || 'Usuário';
+    this.userEmail = data.email || 'usuario@empresa.com';
+    this.userRole = this.mapRole(data.role);
+    this.jobTitle = data.jobTitle || 'Colaborador';
+    this.timeZone = data.timeZone || 'America/Sao_Paulo';
+    this.notificationsEnabled = data.notificationsEnabled ?? true;
+    this.preferredTheme = this.normalizeTheme(data.preferredTheme);
+    this.profilePhoto = data.profilePhoto ?? null;
+
+    this.formName = this.userName;
+    this.formEmail = this.userEmail;
+    this.formJobTitle = this.jobTitle;
+    this.formTimeZone = this.timeZone;
+    this.formNotificationsEnabled = this.notificationsEnabled;
+    this.formPreferredTheme = this.preferredTheme;
+
+    this.themeService.setTheme(this.preferredTheme);
   }
 }

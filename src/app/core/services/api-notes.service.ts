@@ -69,7 +69,13 @@ interface ApiNoteResponse {
 })
 export class ApiNotesService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/notes';
+
+  private backendBaseUrl =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:8080'
+      : 'https://SEU-BACKEND.onrender.com';
+
+  private apiUrl = `${this.backendBaseUrl}/notes`;
 
   getAll(): Observable<NoteBlock[]> {
     return this.http.get<ApiNoteResponse[]>(this.apiUrl).pipe(

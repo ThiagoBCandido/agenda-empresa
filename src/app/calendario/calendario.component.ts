@@ -16,20 +16,35 @@ function priorityColor(priority: Priority) {
   return '#3b82f6';
 }
 
-function enumerateDays(startDate: string, endDate: string) {
-  const dates: string[] = [];
-  const start = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T00:00:00`);
-  const current = new Date(start);
+function addOneDay(date: string): string {
+  const d = new Date(`${date}T00:00:00`);
+  d.setDate(d.getDate() + 1);
 
-  while (current <= end) {
-    const y = current.getFullYear();
-    const m = String(current.getMonth() + 1).padStart(2, '0');
-    const d = String(current.getDate()).padStart(2, '0');
-    dates.push(`${y}-${m}-${d}`);
-    current.setDate(current.getDate() + 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+
+  return `${y}-${m}-${day}`;
+}
+
+function normalizeDateRange(startDate: string, endDate: string) {
+  if (!startDate) {
+    return { startDate: '', endDate: '' };
   }
-  return dates;
+
+  const finalEndDate = endDate || startDate;
+
+  if (finalEndDate < startDate) {
+    return {
+      startDate: finalEndDate,
+      endDate: startDate
+    };
+  }
+
+  return {
+    startDate,
+    endDate: finalEndDate
+  };
 }
 
 @Component({
@@ -41,15 +56,18 @@ function enumerateDays(startDate: string, endDate: string) {
 })
 export class CalendarioComponent implements OnInit {
   @ViewChild(FullCalendarComponent) calendarComponent?: FullCalendarComponent;
+
   private resizeRaf: number | null = null;
+
   selectedDate: string | null = null;
   showPriorityMenu = false;
   menuX = 0;
   menuY = 0;
   showModal = false;
-  allowDateEdit = false;
+  allowDateEdit = true;
   isEditing = false;
   editingId: string | null = null;
+
   draftPriority: Priority = 'media';
   draftTitle = '';
   draftDesc = '';
@@ -57,8 +75,10 @@ export class CalendarioComponent implements OnInit {
   draftEndDate = '';
   draftStartTime = '';
   draftEndTime = '';
+
   notesOfSelectedDay: NoteBlock[] = [];
   pendingActions = new Map<string, 'done' | 'trash'>();
+
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
@@ -73,18 +93,23 @@ export class CalendarioComponent implements OnInit {
 
     dateClick: (info) => {
       this.selectedDate = info.dateStr;
+
       const ev = info.jsEvent as MouseEvent;
       this.menuX = ev.clientX;
       this.menuY = ev.clientY;
-      this.allowDateEdit = false;
+
+      this.allowDateEdit = true;
       this.showPriorityMenu = true;
       this.showModal = false;
+
       this.refreshSelectedDayList();
     },
 
     eventClick: (info) => {
       const noteId = (info.event.extendedProps as any).noteId as string | undefined;
+
       if (!noteId) return;
+
       this.notes.getById(noteId).subscribe({
         next: (note) => {
           if (note.deleted || note.done) return;
@@ -96,6 +121,7 @@ export class CalendarioComponent implements OnInit {
       });
     }
   };
+
   constructor(
     private notes: ApiNotesService,
     private notesRefreshService: NotesRefreshService
@@ -107,6 +133,7 @@ export class CalendarioComponent implements OnInit {
 
   animateCalendarResize(duration = 340) {
     const api = this.calendarComponent?.getApi();
+
     if (!api) return;
 
     if (this.resizeRaf !== null) {
@@ -114,6 +141,7 @@ export class CalendarioComponent implements OnInit {
     }
 
     const start = performance.now();
+
     const tick = (now: number) => {
       api.updateSize();
 
@@ -125,6 +153,7 @@ export class CalendarioComponent implements OnInit {
         api.render();
       }
     };
+
     this.resizeRaf = requestAnimationFrame(tick);
   }
 
@@ -148,16 +177,26 @@ export class CalendarioComponent implements OnInit {
   reloadCalendarEvents() {
     this.notes.getActive().subscribe({
       next: (activeNotes) => {
-        const events: EventInput[] = activeNotes.flatMap((n) =>
-          enumerateDays(n.date, n.endDate || n.date).map(day => ({
-            title: n.title?.trim() ? n.title : '(Sem título)',
-            date: day,
-            color: priorityColor(n.priority),
-            extendedProps: { noteId: n.id }
-          }))
-        );
+        const events: EventInput[] = activeNotes.map((note) => {
+          const range = normalizeDateRange(note.date, note.endDate || note.date);
 
-        this.calendarOptions = { ...this.calendarOptions, events };
+          return {
+            id: note.id,
+            title: note.title?.trim() ? note.title : '(Sem título)',
+            start: range.startDate,
+            end: addOneDay(range.endDate),
+            allDay: true,
+            color: priorityColor(note.priority),
+            extendedProps: {
+              noteId: note.id
+            }
+          };
+        });
+
+        this.calendarOptions = {
+          ...this.calendarOptions,
+          events
+        };
       },
       error: (err) => {
         console.error('Erro ao recarregar eventos do calendário:', err);
@@ -168,26 +207,30 @@ export class CalendarioComponent implements OnInit {
   pickPriority(p: Priority) {
     this.draftPriority = p;
     this.showPriorityMenu = false;
-    this.allowDateEdit = false;
+    this.allowDateEdit = true;
     this.isEditing = false;
     this.editingId = null;
+
     this.draftTitle = '';
     this.draftDesc = '';
     this.draftStartDate = this.selectedDate || '';
     this.draftEndDate = this.selectedDate || '';
     this.draftStartTime = '';
     this.draftEndTime = '';
+
     this.pendingActions.clear();
     this.showModal = true;
+
     this.refreshSelectedDayList();
   }
 
-  openCreateModal(date: string, priority: Priority, allowDateEdit: boolean = false) {
+  openCreateModal(date: string, priority: Priority, allowDateEdit: boolean = true) {
     this.selectedDate = date;
     this.allowDateEdit = allowDateEdit;
     this.showPriorityMenu = false;
     this.isEditing = false;
     this.editingId = null;
+
     this.draftPriority = priority;
     this.draftTitle = '';
     this.draftDesc = '';
@@ -195,17 +238,20 @@ export class CalendarioComponent implements OnInit {
     this.draftEndDate = date;
     this.draftStartTime = '';
     this.draftEndTime = '';
+
     this.pendingActions.clear();
     this.showModal = true;
+
     this.refreshSelectedDayList();
   }
 
   openEditModal(note: NoteBlock) {
     this.selectedDate = note.date;
-    this.allowDateEdit = false;
+    this.allowDateEdit = true;
     this.showPriorityMenu = false;
     this.isEditing = true;
     this.editingId = note.id;
+
     this.draftPriority = note.priority;
     this.draftTitle = note.title;
     this.draftDesc = note.description;
@@ -213,8 +259,10 @@ export class CalendarioComponent implements OnInit {
     this.draftEndDate = note.endDate || note.date;
     this.draftStartTime = note.startTime || '';
     this.draftEndTime = note.endTime || '';
+
     this.pendingActions.clear();
     this.showModal = true;
+
     this.refreshSelectedDayList();
   }
 
@@ -228,15 +276,17 @@ export class CalendarioComponent implements OnInit {
   }
 
   private buildPayload(): NoteWritePayload {
-    const startDate = this.draftStartDate || this.selectedDate || '';
-    const endDate = this.draftEndDate || startDate;
+    const range = normalizeDateRange(
+      this.draftStartDate || this.selectedDate || '',
+      this.draftEndDate || this.draftStartDate || this.selectedDate || ''
+    );
 
     return {
       title: this.draftTitle.trim() || 'Sem título',
       description: this.draftDesc.trim(),
       priority: this.draftPriority,
-      date: startDate,
-      endDate,
+      date: range.startDate,
+      endDate: range.endDate,
       startTime: this.draftStartTime || '',
       endTime: this.draftEndTime || ''
     };
@@ -256,7 +306,9 @@ export class CalendarioComponent implements OnInit {
 
     return forkJoin(
       actions.map(([id, action]) =>
-        action === 'done' ? this.notes.toggleDone(id): this.notes.moveToTrash(id)
+        action === 'done'
+          ? this.notes.toggleDone(id)
+          : this.notes.moveToTrash(id)
       )
     );
   }
@@ -273,7 +325,11 @@ export class CalendarioComponent implements OnInit {
     if (!title && !desc) return;
 
     const payload = this.buildPayload();
-    const request$ = this.isEditing && this.editingId ? this.notes.update(this.editingId, payload): this.notes.create(payload);
+
+    const request$ = this.isEditing && this.editingId
+      ? this.notes.update(this.editingId, payload)
+      : this.notes.create(payload);
+
     request$.pipe(
       switchMap(() => this.applyPendingActions())
     ).subscribe({

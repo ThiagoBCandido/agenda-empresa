@@ -9,7 +9,6 @@ import com.agendaempresa.backend.repository.NoteRepository;
 import com.agendaempresa.backend.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -72,7 +71,7 @@ public class NoteService {
     public List<NoteResponse> listByDate(LocalDate date) {
         UUID userId = getCurrentUser().getId();
 
-        return noteRepository.findByUserIdAndDeletedFalseAndDoneFalseAndDate(userId, date).stream()
+        return noteRepository.findActiveByDateInsideRange(userId, date).stream()
                 .sorted(Comparator.comparing(Note::getCreatedAt))
                 .map(this::toResponse)
                 .toList();
@@ -85,13 +84,16 @@ public class NoteService {
     public NoteResponse create(NoteRequest request) {
         LocalDateTime now = LocalDateTime.now();
 
+        LocalDate startDate = request.date();
+        LocalDate endDate = normalizeEndDate(request.date(), request.endDate());
+
         Note note = new Note();
         note.setUser(getCurrentUser());
         note.setTitle(request.title().trim());
         note.setDescription(request.description() == null ? "" : request.description().trim());
         note.setPriority(request.priority());
-        note.setDate(request.date());
-        note.setEndDate(request.endDate() != null ? request.endDate() : request.date());
+        note.setDate(startDate);
+        note.setEndDate(endDate);
         note.setStartTime(request.startTime());
         note.setEndTime(request.endTime());
         note.setDone(false);
@@ -107,11 +109,14 @@ public class NoteService {
     public NoteResponse update(UUID id, NoteRequest request) {
         Note note = getExistingNote(id);
 
+        LocalDate startDate = request.date();
+        LocalDate endDate = normalizeEndDate(request.date(), request.endDate());
+
         note.setTitle(request.title().trim());
         note.setDescription(request.description() == null ? "" : request.description().trim());
         note.setPriority(request.priority());
-        note.setDate(request.date());
-        note.setEndDate(request.endDate() != null ? request.endDate() : request.date());
+        note.setDate(startDate);
+        note.setEndDate(endDate);
         note.setStartTime(request.startTime());
         note.setEndTime(request.endTime());
         note.setUpdatedAt(LocalDateTime.now());
@@ -123,6 +128,7 @@ public class NoteService {
         Note note = getExistingNote(id);
 
         boolean nextDone = !Boolean.TRUE.equals(note.getDone());
+
         note.setDone(nextDone);
         note.setCompletedAt(nextDone ? LocalDateTime.now() : null);
         note.setUpdatedAt(LocalDateTime.now());
@@ -163,6 +169,18 @@ public class NoteService {
 
     public void delete(UUID id) {
         deletePermanently(id);
+    }
+
+    private LocalDate normalizeEndDate(LocalDate startDate, LocalDate endDate) {
+        if (endDate == null) {
+            return startDate;
+        }
+
+        if (endDate.isBefore(startDate)) {
+            return startDate;
+        }
+
+        return endDate;
     }
 
     private Note getExistingNote(UUID id) {

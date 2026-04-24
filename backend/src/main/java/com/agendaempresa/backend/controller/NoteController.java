@@ -6,14 +6,12 @@ import com.agendaempresa.backend.service.NoteService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/notes")
-@CrossOrigin(origins = "http://localhost:4200")
 public class NoteController {
 
     private final NoteService noteService;
@@ -44,9 +42,7 @@ public class NoteController {
 
     @GetMapping("/by-date")
     public List<NoteResponse> listByDate(
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date
     ) {
         return noteService.listByDate(date);
     }
@@ -79,11 +75,6 @@ public class NoteController {
     @PatchMapping("/{id}/restore")
     public NoteResponse restoreFromTrash(@PathVariable UUID id) {
         return noteService.restoreFromTrash(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable UUID id) {
-        noteService.delete(id);
     }
 
     @DeleteMapping("/{id}/permanent")
