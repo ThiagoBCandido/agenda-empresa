@@ -1,26 +1,24 @@
 import { inject } from '@angular/core';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { BACKEND_BASE_URL } from '../config/api.config';
 
 export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-
-  const backendBaseUrl =
-    window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://agenda-empresa-backend.onrender.com';
-
+  const router = inject(Router);
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      const isBackendRequest = req.url.startsWith(backendBaseUrl);
-      const isAuthRequest = req.url.includes('/auth/login') || req.url.includes('/auth/register');
+      const isAuthRequest =
+        req.url.includes('/auth/login') ||
+        req.url.includes('/auth/register');
+      const shouldLogout = req.url.startsWith(BACKEND_BASE_URL) && !isAuthRequest && [401, 403].includes(error.status);
 
-      if (isBackendRequest && !isAuthRequest && (error.status === 401 || error.status === 403)) {
+      if (shouldLogout) {
         authService.logout();
-        window.location.href = `${window.location.origin}/agenda-empresa/login`;
+        router.navigate(['/login']);
       }
-
       return throwError(() => error);
     })
   );
