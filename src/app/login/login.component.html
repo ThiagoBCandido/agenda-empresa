@@ -1,4 +1,7 @@
 <div class="login-page">
+  <div class="session-message" *ngIf="(sessionMessage$ | async) as sessionMessage">
+    {{ sessionMessage }}
+  </div>
   <div class="login-card">
     <div class="brand">
       <img src="assets/logo2.png" alt="Logo" class="brand-logo" />

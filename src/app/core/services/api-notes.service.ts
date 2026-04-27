@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../config/api.config';
 
 export type Priority = 'alta' | 'media' | 'baixa';
 
@@ -70,12 +71,7 @@ interface ApiNoteResponse {
 export class ApiNotesService {
   private http = inject(HttpClient);
 
-  private backendBaseUrl =
-    window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://agenda-empresa-backend.onrender.com';
-
-  private apiUrl = `${this.backendBaseUrl}/notes`;
+  private readonly apiUrl = API_ENDPOINTS.notes;
 
   getAll(): Observable<NoteBlock[]> {
     return this.http.get<ApiNoteResponse[]>(this.apiUrl).pipe(

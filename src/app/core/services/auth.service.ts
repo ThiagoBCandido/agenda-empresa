@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
+import { API_ENDPOINTS } from '../config/api.config';
 
 export interface LoginRequest {
   email: string;
@@ -67,13 +68,7 @@ export interface AuthMeResponse {
 export class AuthService {
   private http = inject(HttpClient);
 
-  private backendBaseUrl =
-    window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://agenda-empresa-backend.onrender.com';
-
-  private apiUrl = `${this.backendBaseUrl}/auth`;
-
+  private readonly apiUrl = API_ENDPOINTS.auth;
   private readonly TOKEN_KEY = 'agenda_token';
   private readonly USER_KEY = 'agenda_user';
 
@@ -105,101 +100,32 @@ export class AuthService {
 
   refreshMe(): Observable<AuthMeResponse> {
     return this.http.get<AuthMeResponse>(`${this.apiUrl}/me`).pipe(
-      tap((me) => {
-        const current = this.currentUserSubject.value;
-        if (!current) return;
-
-        const merged: AuthResponse = {
-          ...current,
-          id: me.id,
-          name: me.name,
-          email: me.email,
-          role: me.role,
-          jobTitle: me.jobTitle,
-          timeZone: me.timeZone,
-          notificationsEnabled: me.notificationsEnabled,
-          preferredTheme: me.preferredTheme,
-          profilePhoto: me.profilePhoto
-        };
-
-        this.persistUserOnly(merged);
-      })
+      tap((me) => this.mergeCurrentUser(me))
     );
   }
 
   updateProfile(data: UpdateProfileRequest): Observable<AuthMeResponse> {
-    return this.http.put<AuthMeResponse>(`${this.apiUrl}/me`, data).pipe(
-      tap((me) => {
-        const current = this.currentUserSubject.value;
-        if (!current) return;
-
-        const merged: AuthResponse = {
-          ...current,
-          id: me.id,
-          name: me.name,
-          email: me.email,
-          role: me.role,
-          jobTitle: me.jobTitle,
-          timeZone: me.timeZone,
-          notificationsEnabled: me.notificationsEnabled,
-          preferredTheme: me.preferredTheme,
-          profilePhoto: me.profilePhoto
-        };
-
-        this.persistUserOnly(merged);
-      })
+    return this.http.put<AuthResponse>(`${this.apiUrl}/me`, data).pipe(
+      tap((response) => this.setSession(response)),
+      switchMap(() => this.refreshMe())
     );
   }
 
-  changePassword(data: ChangePasswordRequest): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.apiUrl}/me/password`, data);
+  changePassword(data: ChangePasswordRequest): Observable<AuthResponse> {
+    return this.http.put<AuthResponse>(`${this.apiUrl}/me/password`, data).pipe(
+      tap((response) => this.setSession(response))
+    );
   }
 
   updateProfilePhoto(data: UpdateProfilePhotoRequest): Observable<AuthMeResponse> {
     return this.http.put<AuthMeResponse>(`${this.apiUrl}/me/photo`, data).pipe(
-      tap((me) => {
-        const current = this.currentUserSubject.value;
-        if (!current) return;
-
-        const merged: AuthResponse = {
-          ...current,
-          id: me.id,
-          name: me.name,
-          email: me.email,
-          role: me.role,
-          jobTitle: me.jobTitle,
-          timeZone: me.timeZone,
-          notificationsEnabled: me.notificationsEnabled,
-          preferredTheme: me.preferredTheme,
-          profilePhoto: me.profilePhoto
-        };
-
-        this.persistUserOnly(merged);
-      })
+      tap((me) => this.mergeCurrentUser(me))
     );
   }
 
   updateThemePreference(preferredTheme: 'dark' | 'light'): Observable<AuthMeResponse> {
     return this.http.put<AuthMeResponse>(`${this.apiUrl}/me/theme`, { preferredTheme }).pipe(
-      tap((me) => {
-        const current = this.currentUserSubject.value;
-        if (!current) return;
-
-        const merged: AuthResponse = {
-          ...current,
-          id: me.id,
-          name: me.name,
-          email: me.email,
-          role: me.role,
-          jobTitle: me.jobTitle,
-          timeZone: me.timeZone,
-          notificationsEnabled: me.notificationsEnabled,
-          preferredTheme: me.preferredTheme,
-          profilePhoto: me.profilePhoto
-        };
-
-        this.persistUserOnly(merged);
-      })
+      tap((me) => this.mergeCurrentUser(me))
     );
   }
 
@@ -221,11 +147,9 @@ export class AuthService {
     this.currentUserSubject.next(null);
     this.unauthorizedHandled = false;
 
-    if (setMessage) {
-      this.sessionMessageSubject.next('Sua sessão expirou. Faça login novamente.');
-    } else {
-      this.sessionMessageSubject.next('');
-    }
+    this.sessionMessageSubject.next(
+      setMessage ? 'Sua sessão expirou. Faça login novamente.' : ''
+    );
   }
 
   handleUnauthorized() {
@@ -244,6 +168,24 @@ export class AuthService {
     localStorage.setItem(this.USER_KEY, JSON.stringify(response));
     this.currentUserSubject.next(response);
     this.sessionMessageSubject.next('');
+  }
+
+  private mergeCurrentUser(me: AuthMeResponse) {
+    const current = this.currentUserSubject.value;
+    if (!current) return;
+
+    this.persistUserOnly({
+      ...current,
+      id: me.id,
+      name: me.name,
+      email: me.email,
+      role: me.role,
+      jobTitle: me.jobTitle,
+      timeZone: me.timeZone,
+      notificationsEnabled: me.notificationsEnabled,
+      preferredTheme: me.preferredTheme,
+      profilePhoto: me.profilePhoto
+    });
   }
 
   private persistUserOnly(user: AuthResponse) {

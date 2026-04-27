@@ -80,7 +80,7 @@ export class AppShellComponent implements OnInit, OnDestroy {
         this.deadlineAlertService.stop();
       }
 
-      if (!user) {
+      if (!user && !this.authService.getToken()) {
         this.router.navigateByUrl('/login');
       }
     });

@@ -11,6 +11,7 @@ export class DeadlineAlertService {
   private alertedIds = new Set<string>();
   private intervalId: number | null = null;
   private checking = false;
+  private readonly checkIntervalMs = 30000;
 
   constructor(private notesService: ApiNotesService) {}
 
@@ -22,7 +23,7 @@ export class DeadlineAlertService {
 
     this.intervalId = window.setInterval(() => {
       this.checkNow();
-    }, 5000);
+    }, this.checkIntervalMs);
   }
 
   stop() {
@@ -34,6 +35,7 @@ export class DeadlineAlertService {
     this.checking = false;
     this.queue = [];
     this.currentAlertSubject.next(null);
+    this.alertedIds.clear();
   }
 
   dismiss() {

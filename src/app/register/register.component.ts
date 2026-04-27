@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { AuthService } from '../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   name = '';
@@ -22,6 +22,12 @@ export class RegisterComponent {
   loading = false;
   showPassword = false;
   showConfirmPassword = false;
+
+  ngOnInit() {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigateByUrl('/app');
+    }
+  }
 
   togglePassword() {
     if (this.loading) return;

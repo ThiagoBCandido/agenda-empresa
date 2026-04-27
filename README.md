@@ -230,8 +230,53 @@ Como continuidade do projeto, ainda podem ser adicionados recursos como:
 
 ---
 
-## Execução do projeto
+# Otimizações aplicadas
 
-### Front-end
+Notei que a aplicação estava muito "redundante", e com arquivos que criei durante a primeira semana, que com o decorrer do projeto se tornaram inuteis. Com isso, resolvi otimizar o código. Estou anotando tudo o que venho alterando abaixo;
+
+## Front-end Angular
+
+- `AppComponent` foi simplificado para ser apenas a entrada da aplicação com `<router-outlet>`.
+- As rotas existentes agora são usadas de fato: `/login`, `/register` e `/app`.
+- A tela principal ficou concentrada no `AppShellComponent`, evitando duplicação entre `AppComponent` e `AppShellComponent`.
+- A URL do backend foi centralizada em `src/app/core/config/api.config.ts`.
+- `AuthService` foi simplificado para reaproveitar a mesma lógica de sincronização do usuário.
+- A atualização de perfil agora preserva corretamente o token quando o e-mail é alterado.
+- A alteração de senha agora também atualiza a sessão com o novo token retornado pelo backend.
+- O interceptor duplicado de erro de autenticação foi removido do fluxo principal, deixando o controle de sessão no `auth.interceptor.ts`.
+- O serviço local antigo de notas em memória foi removido, pois o projeto já usa `ApiNotesService` integrado ao backend.
+- O alerta de deadline deixou de consultar o backend a cada 5 segundos e passou para 30 segundos, reduzindo chamadas repetidas sem remover a função.
+
+## Back-end Spring Boot
+
+- O log SQL (`spring.jpa.show-sql`) agora vem desativado por padrão, evitando excesso de logs em produção. Ainda pode ser ativado.
+
+## Arquivos limpos
+
+Foram removidos arquivos mortos/legados que não eram mais usados pela aplicação:
+
+- `src/app/core/interceptors/auth-error.interceptor.ts`
+- `src/app/core/services/notes.service.ts`
+- arquivos `.spec.ts.bak` antigos
+
+## Como testar
+
+Front-end:
+
 ```bash
-ng serve
+npm install
+npm start
+```
+
+Build do front-end:
+
+```bash
+npm run build
+```
+
+Back-end:
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```

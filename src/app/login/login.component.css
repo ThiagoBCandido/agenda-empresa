@@ -3,6 +3,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 16px;
   background:
     radial-gradient(circle at top, rgba(22, 101, 52, 0.18), transparent 35%),
     linear-gradient(135deg, #020403 0%, #05140d 45%, #0a1e15 100%);
@@ -191,4 +193,23 @@ body.theme-light .password-toggle img {
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+}
+
+.session-message {
+  width: min(420px, 100%);
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  color: #fecaca;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+body.theme-light .session-message {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.16);
+  color: #991b1b;
 }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { AuthService } from '../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -20,6 +20,13 @@ export class LoginComponent {
   errorMessage = '';
   loading = false;
   showPassword = false;
+  sessionMessage$ = this.authService.sessionMessage$;
+
+  ngOnInit() {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigateByUrl('/app');
+    }
+  }
 
   togglePassword() {
     if (this.loading) return;
