@@ -54,6 +54,12 @@ backend/target/
 *.class
 *.log
 
+# Environment variables
+.env
+.env.*
+!.env.example
+!**/.env.example
+
 # ===== local =====
 .env
 .env.*
