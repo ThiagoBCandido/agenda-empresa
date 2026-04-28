@@ -77,15 +77,11 @@ export class LixeiraComponent implements OnInit {
   private loadTrashNotes() {
     this.apiNotesService.getTrash().subscribe({
       next: (notes) => {
-        this.notes = [...notes].sort(
-          (a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0)
-        );
-
+        this.notes = [...notes].sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0));
         this.rebuildGroups();
 
         if (this.selectedNote) {
           const updated = this.notes.find(n => n.id === this.selectedNote?.id) || null;
-
           if (updated && updated.deleted) {
             this.selectedNote = updated;
           } else {
@@ -101,15 +97,13 @@ export class LixeiraComponent implements OnInit {
 
   private rebuildGroups() {
     const term = this.searchTerm.trim().toLowerCase();
-
     const filtered = this.notes.filter(note => {
       if (!term) return true;
-
       const haystack = [
         note.title,
         note.description,
         note.date,
-        this.formatGroupLabel(note.deletedAt),
+        this.formatGroupLabel(note.deletedAt)
       ]
         .filter(Boolean)
         .join(' ')
