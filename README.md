@@ -38,6 +38,7 @@ O sistema permite criar notas, definir prioridades, visualizar tarefas em calend
 - Variáveis de ambiente com `.env`
 - Proxy local do Angular para integração com o backend
 - Autenticação com token JWT
+- VS Code Ports / Dev Tunnels para demonstração temporária
 
 ---
 
@@ -182,9 +183,6 @@ backend/.env.example
 
 ---
 
-## Como acessar o projeto como se fosse um site:
-  https://wcgz8sw3-4200.brs.devtunnels.ms/
-
 ## Como rodar o projeto localmente
 
 ### 1. Clone o repositório
@@ -301,6 +299,29 @@ http://localhost:8080
 
 ---
 
+## Acesso à aplicação
+
+A aplicação funciona localmente e também pode ser acessada temporariamente por meio do link gerado pelo VS Code Ports / Dev Tunnels.
+
+Link de demonstração:
+
+```text
+https://wcgz8sw3-4200.brs.devtunnels.ms/
+```
+
+Para que o link funcione corretamente, é necessário manter em execução na máquina local:
+
+- Front-end Angular na porta `4200`;
+- Back-end Spring Boot na porta `8080`;
+- PostgreSQL local ativo;
+- VS Code aberto com a porta `4200` publicada como `Public`.
+
+O projeto utiliza proxy local do Angular, então o usuário acessa apenas o front-end na porta `4200`, enquanto as requisições para `/auth` e `/notes` são redirecionadas internamente para o backend local.
+
+> Observação: este link é utilizado apenas para demonstração e portfólio. Ele não representa um deploy definitivo em produção, pois depende da máquina local estar ligada e dos serviços estarem rodando.
+
+---
+
 ## Scripts disponíveis
 
 Na raiz do projeto:
@@ -331,11 +352,17 @@ No backend:
 
 Inicia a API Spring Boot.
 
+No Windows PowerShell:
+
+```powershell
+.\mvnw spring-boot:run
+```
+
 ---
 
 ## Observações sobre deploy
 
-Atualmente, o projeto está configurado para execução local.
+Atualmente, o projeto está configurado para execução local e demonstração temporária via VS Code Dev Tunnels.
 
 O frontend pode ser publicado como site estático, por exemplo, no GitHub Pages. Porém, para a aplicação funcionar completamente online, também é necessário publicar:
 
@@ -343,7 +370,7 @@ O frontend pode ser publicado como site estático, por exemplo, no GitHub Pages.
 - o banco PostgreSQL;
 - as variáveis de ambiente de produção.
 
-Sem backend online, funcionalidades como login, cadastro e gerenciamento de notas não funcionarão fora do ambiente local.
+Sem backend online, funcionalidades como login, cadastro e gerenciamento de notas não funcionarão fora do ambiente local ou fora do link temporário do Dev Tunnels.
 
 ---
 
@@ -364,13 +391,13 @@ Sugestão para apresentação do projeto:
 
 ## Status do projeto
 
-Projeto funcional em ambiente local.
+Projeto funcional em ambiente local e acessível temporariamente via VS Code Dev Tunnels para demonstração.
 
 Melhorias futuras planejadas:
 
 - melhorias de performance;
 - ajustes finos de responsividade;
-- criação de uma versão demo online;
+- criação de uma versão demo online permanente;
 - possível modo visitante;
 - melhorias na organização visual;
 - testes automatizados;
