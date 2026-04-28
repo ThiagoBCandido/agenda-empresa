@@ -1,282 +1,387 @@
 # Notes
 
-Sistema web de organização de tarefas, prazos e anotações, desenvolvido como projeto pessoal com foco em uso corporativo.
+Aplicação web full-stack para gerenciamento de anotações, tarefas e prazos, desenvolvida como projeto de estudo e portfólio.
 
-## Autor
+O sistema permite criar notas, definir prioridades, visualizar tarefas em calendário, marcar atividades como concluídas, mover itens para lixeira e receber alertas de deadline.
 
-**Thiago Barbosa Candido**
-
----
-
-## Sobre o projeto
-
-O **Notes** é uma aplicação criada para auxiliar empresas e equipes na organização de atividades, acompanhamento de prazos e gerenciamento visual de anotações em um ambiente centralizado e intuitivo.
-
-A proposta do projeto surgiu da necessidade de criar uma solução prática para o dia a dia corporativo, permitindo registrar compromissos, controlar prioridades, visualizar tarefas em calendário e acompanhar o ciclo de vida de cada anotação, desde sua criação até sua conclusão ou exclusão.
-
-Este projeto foi desenvolvido como uma iniciativa pessoal, com o objetivo de aplicar conhecimentos de desenvolvimento full stack em um sistema com utilidade real para ambientes empresariais.
-
----
-
-## Objetivo
-
-O principal objetivo da aplicação é oferecer uma ferramenta simples e funcional para:
-
-- organizar tarefas e anotações;
-- acompanhar prazos e horários;
-- priorizar atividades;
-- visualizar compromissos em calendário;
-- separar tarefas concluídas e excluídas;
-- melhorar o controle interno de demandas em empresas.
-
----
-
-## O que foi desenvolvido
-
-A aplicação foi construída com foco em experiência de uso, organização visual e integração completa entre front-end e back-end.
-
-Entre os principais recursos implementados estão:
-
-### Autenticação e sessão
-- cadastro de usuário;
-- login com autenticação;
-- proteção de navegação;
-- controle de sessão;
-- logout seguro.
-
-### Calendário e anotações
-- criação de anotações diretamente pelo calendário;
-- escolha de prioridade da tarefa;
-- definição de data inicial, data final, hora inicial e hora final;
-- edição de anotações;
-- atualização e conclusão de tarefas;
-- visualização das anotações do dia selecionado;
-- sincronização entre calendário e lista de anotações.
-
-### Organização das tarefas
-- separação entre:
-  - anotações ativas;
-  - concluídos;
-  - lixeira;
-- marcação de tarefas como concluídas;
-- exclusão de tarefas;
-- persistência das informações via API e banco de dados.
-
-### Perfil do usuário
-- edição de informações do perfil;
-- suporte a foto de perfil;
-- preferências de tema;
-- controle de notificações.
-
-### Experiência visual
-- tema escuro e claro;
-- interface personalizada;
-- destaques visuais por prioridade;
-- interação entre abas e painéis;
-- alertas e notificações de prazo.
-
-### Notificações
-- verificação periódica de prazos;
-- alerta visual dentro da aplicação;
-- notificação do navegador quando o prazo é atingido.
-
----
-
-## Como o projeto foi desenvolvido
-
-O sistema foi construído em arquitetura full stack, separando claramente front-end, back-end e persistência de dados.
-
-### Front-end
-O front-end foi desenvolvido com **Angular**, utilizando componentes standalone e uma estrutura modular para separar responsabilidades da interface.
-
-A interface foi organizada em componentes como:
-- calendário;
-- anotações;
-- concluídos;
-- lixeira;
-- perfil;
-- login;
-- cadastro;
-- alertas e toasts.
-
-Também foi utilizada uma biblioteca de calendário para exibição visual das tarefas por data, com personalizações visuais e integração com os dados vindos da API.
-
-### Back-end
-O back-end foi desenvolvido com **Java + Spring Boot**, seguindo uma estrutura baseada em:
-- controllers;
-- services;
-- repositories;
-- DTOs;
-- autenticação com token;
-- validações;
-- tratamento de erros.
-
-A API REST foi responsável por:
-- autenticar usuários;
-- registrar novos usuários;
-- gerenciar perfil;
-- criar, atualizar, concluir e excluir anotações;
-- fornecer os dados necessários para o front-end.
-
-### Banco de dados
-A persistência foi feita com **PostgreSQL**, armazenando:
-- usuários;
-- dados de perfil;
-- tarefas e anotações;
-- estados das notas;
-- preferências do sistema.
+> Projeto desenvolvido como uma demo funcional, com foco em aprendizado, organização de código, integração entre front-end, back-end e banco de dados.
 
 ---
 
 ## Tecnologias utilizadas
 
 ### Front-end
+
 - Angular
 - TypeScript
 - HTML
 - CSS
-- RxJS
 - FullCalendar
+- RxJS
 
 ### Back-end
+
 - Java
 - Spring Boot
 - Spring Security
 - JWT
 - Spring Data JPA
-- Hibernate
-- Jakarta Validation
+- Maven
 
 ### Banco de dados
+
 - PostgreSQL
 
-### Ferramentas
-- VS Code
-- Maven
-- Postman
-- pgAdmin
+### Outros recursos
+
+- Git e GitHub
+- Variáveis de ambiente com `.env`
+- Proxy local do Angular para integração com o backend
+- Autenticação com token JWT
+
+---
+
+## Funcionalidades
+
+- Cadastro de usuários
+- Login com autenticação JWT
+- Criação de notas
+- Edição de notas
+- Exclusão lógica de notas
+- Lixeira
+- Restauração de notas excluídas
+- Marcar tarefas como concluídas
+- Listagem de tarefas concluídas
+- Definição de prioridade:
+  - Alta
+  - Média
+  - Baixa
+- Integração com calendário
+- Definição de data e horário
+- Alerta de prazo/deadline
+- Tema claro e escuro
+- Interface responsiva
+- Integração com backend e banco PostgreSQL
+
+---
+
+## Objetivo do projeto
+
+O objetivo deste projeto foi desenvolver uma aplicação web completa, passando pelas principais etapas de uma aplicação real:
+
+- construção de interface com Angular;
+- criação de API REST com Spring Boot;
+- autenticação com JWT;
+- persistência de dados com PostgreSQL;
+- organização em camadas;
+- integração entre front-end e back-end;
+- uso de variáveis de ambiente;
+- controle de versão com Git.
+
+Este é meu primeiro projeto mais robusto, criado com o propósito de praticar, aprender e evoluir como desenvolvedor full-stack.
+
+---
+
+## Estrutura do projeto
+
+```text
+agenda-empresa/
+├── src/
+│   └── app/
+│       ├── core/
+│       ├── features/
+│       ├── layout/
+│       └── shared/
+│
+├── backend/
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/
+│   │       └── resources/
+│   ├── .env.example
+│   ├── pom.xml
+│   └── mvnw
+│
+├── proxy.conf.json
+├── package.json
+├── angular.json
+└── README.md
+```
+
+---
+
+## Pré-requisitos
+
+Antes de rodar o projeto, é necessário ter instalado:
+
+- Node.js
+- npm
+- Java JDK
+- PostgreSQL
 - Git
 
 ---
 
-## Estrutura funcional da aplicação
+## Configuração do banco de dados
 
-A aplicação foi dividida em áreas principais para facilitar o uso:
+Crie um banco PostgreSQL local com o nome:
 
-- **Login e Cadastro**  
-  Controle de acesso do usuário.
+```sql
+CREATE DATABASE agenda_empresa;
+```
 
-- **Calendário**  
-  Visualização das tarefas por data e criação de novas anotações.
+O usuário padrão utilizado no exemplo é:
 
-- **Anotações**  
-  Lista das tarefas ativas, com acesso rápido para edição.
+```text
+postgres
+```
 
-- **Concluídos**  
-  Área destinada às tarefas já finalizadas.
-
-- **Lixeira**  
-  Área com tarefas removidas da lista principal.
-
-- **Perfil**  
-  Configuração de dados do usuário, foto, tema e notificações.
+Caso utilize outro usuário, atualize o arquivo `.env` do backend.
 
 ---
 
-## Por que este projeto foi criado
+## Configuração das variáveis de ambiente
 
-Este projeto foi criado como **projeto pessoal**, mas com uma finalidade prática: servir como apoio para empresas no controle interno de tarefas, prazos e anotações.
+Dentro da pasta `backend`, existe um arquivo de exemplo:
 
-A ideia foi desenvolver uma aplicação que unisse:
-- organização;
-- produtividade;
-- controle visual;
-- experiência moderna;
-- utilidade real no ambiente corporativo.
+```text
+backend/.env.example
+```
 
-Além do valor funcional, o projeto também serviu como forma de consolidar conhecimentos em desenvolvimento full stack, autenticação, integração entre front-end e back-end, persistência de dados e construção de interfaces interativas.
+Crie uma cópia dele com o nome:
 
----
+```text
+backend/.env
+```
 
-## Aprendizados obtidos
+Exemplo de configuração:
 
-Durante o desenvolvimento, foram trabalhados diversos conceitos importantes, como:
+```properties
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/agenda_empresa
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=sua_senha_do_postgres
 
-- construção de aplicações full stack;
-- autenticação e autorização;
-- comunicação entre Angular e Spring Boot;
-- uso de APIs REST;
-- modelagem de dados;
-- manipulação de estado no front-end;
-- organização de componentes;
-- tratamento de erros;
-- persistência em banco de dados;
-- refinamento visual e experiência do usuário.
+JWT_SECRET=sua_chave_jwt_aqui
+JWT_EXPIRATION_MS=86400000
 
----
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+SPRING_JPA_SHOW_SQL=false
 
-## Possíveis evoluções futuras
+APP_CORS_ALLOWED_ORIGINS=http://localhost:4200
 
-Como continuidade do projeto, ainda podem ser adicionados recursos como:
+PORT=8080
+```
 
-- filtros avançados;
-- busca por anotações;
-- notificações em tempo real;
-- dashboard com métricas;
-- suporte a múltiplos usuários por equipe;
-- categorias e etiquetas;
-- melhorias para uso mobile;
-- deploy em ambiente de produção com proxy reverso e camada de borda.
+O arquivo `.env` contém informações sensíveis e não deve ser enviado para o GitHub.
+
+O arquivo seguro para versionamento é:
+
+```text
+backend/.env.example
+```
 
 ---
 
-# Otimizações aplicadas
+## Como acessar o projeto como se fosse um site:
+  https://wcgz8sw3-4200.brs.devtunnels.ms/
 
-Notei que a aplicação estava muito "redundante", e com arquivos que criei durante a primeira semana, que com o decorrer do projeto se tornaram inuteis. Com isso, resolvi otimizar o código. Estou anotando tudo o que venho alterando abaixo;
+## Como rodar o projeto localmente
 
-## Front-end Angular
+### 1. Clone o repositório
 
-- `AppComponent` foi simplificado para ser apenas a entrada da aplicação com `<router-outlet>`.
-- As rotas existentes agora são usadas de fato: `/login`, `/register` e `/app`.
-- A tela principal ficou concentrada no `AppShellComponent`, evitando duplicação entre `AppComponent` e `AppShellComponent`.
-- A URL do backend foi centralizada em `src/app/core/config/api.config.ts`.
-- `AuthService` foi simplificado para reaproveitar a mesma lógica de sincronização do usuário.
-- A atualização de perfil agora preserva corretamente o token quando o e-mail é alterado.
-- A alteração de senha agora também atualiza a sessão com o novo token retornado pelo backend.
-- O interceptor duplicado de erro de autenticação foi removido do fluxo principal, deixando o controle de sessão no `auth.interceptor.ts`.
-- O serviço local antigo de notas em memória foi removido, pois o projeto já usa `ApiNotesService` integrado ao backend.
-- O alerta de deadline deixou de consultar o backend a cada 5 segundos e passou para 30 segundos, reduzindo chamadas repetidas sem remover a função.
+```bash
+git clone URL_DO_REPOSITORIO
+```
 
-## Back-end Spring Boot
+Entre na pasta do projeto:
 
-- O log SQL (`spring.jpa.show-sql`) agora vem desativado por padrão, evitando excesso de logs em produção. Ainda pode ser ativado.
+```bash
+cd agenda-empresa
+```
 
-## Arquivos limpos
+---
 
-Foram removidos arquivos mortos/legados que não eram mais usados pela aplicação:
-
-- `src/app/core/interceptors/auth-error.interceptor.ts`
-- `src/app/core/services/notes.service.ts`
-- arquivos `.spec.ts.bak` antigos
-
-## Como testar
-
-Front-end:
+### 2. Instale as dependências do front-end
 
 ```bash
 npm install
+```
+
+---
+
+### 3. Rode o back-end
+
+Entre na pasta do backend:
+
+```bash
+cd backend
+```
+
+Execute o Spring Boot:
+
+```bash
+./mvnw spring-boot:run
+```
+
+No Windows PowerShell, use:
+
+```powershell
+.\mvnw spring-boot:run
+```
+
+O backend será iniciado em:
+
+```text
+http://localhost:8080
+```
+
+---
+
+### 4. Rode o front-end
+
+Em outro terminal, volte para a raiz do projeto:
+
+```bash
+cd ..
+```
+
+Execute:
+
+```bash
 npm start
 ```
 
-Build do front-end:
+O frontend será iniciado em:
+
+```text
+http://localhost:4200
+```
+
+---
+
+## Proxy local
+
+O projeto utiliza um proxy local do Angular para facilitar a comunicação entre frontend e backend durante o desenvolvimento.
+
+Arquivo:
+
+```text
+proxy.conf.json
+```
+
+Configuração:
+
+```json
+{
+  "/auth": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/notes": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
+```
+
+Com isso, o frontend pode chamar:
+
+```text
+/auth
+/notes
+```
+
+E o Angular redireciona internamente para:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## Scripts disponíveis
+
+Na raiz do projeto:
+
+```bash
+npm start
+```
+
+Inicia o Angular com proxy local.
 
 ```bash
 npm run build
 ```
 
-Back-end:
+Gera a build de produção do frontend.
 
 ```bash
-cd backend
+npm test
+```
+
+Executa os testes configurados do Angular.
+
+No backend:
+
+```bash
 ./mvnw spring-boot:run
 ```
+
+Inicia a API Spring Boot.
+
+---
+
+## Observações sobre deploy
+
+Atualmente, o projeto está configurado para execução local.
+
+O frontend pode ser publicado como site estático, por exemplo, no GitHub Pages. Porém, para a aplicação funcionar completamente online, também é necessário publicar:
+
+- o backend Spring Boot;
+- o banco PostgreSQL;
+- as variáveis de ambiente de produção.
+
+Sem backend online, funcionalidades como login, cadastro e gerenciamento de notas não funcionarão fora do ambiente local.
+
+---
+
+## Demonstração
+
+Sugestão para apresentação do projeto:
+
+- gravar vídeo da aplicação rodando localmente;
+- mostrar cadastro e login;
+- criar uma nota;
+- definir prioridade;
+- visualizar no calendário;
+- marcar como concluída;
+- mover para lixeira;
+- alternar tema claro/escuro.
+
+---
+
+## Status do projeto
+
+Projeto funcional em ambiente local.
+
+Melhorias futuras planejadas:
+
+- melhorias de performance;
+- ajustes finos de responsividade;
+- criação de uma versão demo online;
+- possível modo visitante;
+- melhorias na organização visual;
+- testes automatizados;
+- documentação da API.
+
+---
+
+## Autor
+
+Desenvolvido por **Thiago Barbosa Candido**.
+
+Projeto criado para fins de estudo, prática e portfólio como desenvolvedor full-stack.
+
+---
