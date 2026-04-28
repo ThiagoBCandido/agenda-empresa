@@ -8,6 +8,11 @@ O sistema permite criar notas, definir prioridades, visualizar tarefas em calend
 
 ---
 
+## Autor
+
+### Thiago Barbosa Candido
+
+
 ## Tecnologias utilizadas
 
 ### Front-end
