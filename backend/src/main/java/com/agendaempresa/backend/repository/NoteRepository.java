@@ -24,6 +24,6 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     List<Note> findActiveByDateInsideRange(
             @Param("userId") UUID userId,
             @Param("date") LocalDate date
-    );
+);
     Optional<Note> findByIdAndUserId(UUID id, UUID userId);
 }

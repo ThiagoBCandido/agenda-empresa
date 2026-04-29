@@ -1,7 +1,6 @@
 package com.agendaempresa.backend.dto;
 
 import com.agendaempresa.backend.model.UserRole;
-
 import java.util.UUID;
 
 public record AuthMeResponse(

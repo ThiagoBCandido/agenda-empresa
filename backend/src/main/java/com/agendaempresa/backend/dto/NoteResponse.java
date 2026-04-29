@@ -1,7 +1,6 @@
 package com.agendaempresa.backend.dto;
 
 import com.agendaempresa.backend.model.Priority;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,5 +21,4 @@ public record NoteResponse(
         LocalDateTime updatedAt,
         LocalDateTime completedAt,
         LocalDateTime deletedAt
-) {
-}
+) {}

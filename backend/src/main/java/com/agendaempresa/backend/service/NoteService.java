@@ -28,53 +28,27 @@ public class NoteService {
 
     public List<NoteResponse> listAll() {
         UUID userId = getCurrentUser().getId();
-
-        return noteRepository.findByUserId(userId).stream()
-                .sorted(Comparator.comparing(Note::getDate).thenComparing(Note::getCreatedAt))
-                .map(this::toResponse)
-                .toList();
+        return noteRepository.findByUserId(userId).stream().sorted(Comparator.comparing(Note::getDate).thenComparing(Note::getCreatedAt)).map(this::toResponse).toList();
     }
 
     public List<NoteResponse> listActive() {
         UUID userId = getCurrentUser().getId();
-
-        return noteRepository.findByUserIdAndDeletedFalseAndDoneFalse(userId).stream()
-                .sorted(Comparator.comparing(Note::getDate).thenComparing(Note::getCreatedAt))
-                .map(this::toResponse)
-                .toList();
+        return noteRepository.findByUserIdAndDeletedFalseAndDoneFalse(userId).stream().sorted(Comparator.comparing(Note::getDate).thenComparing(Note::getCreatedAt)).map(this::toResponse).toList();
     }
 
     public List<NoteResponse> listCompleted() {
         UUID userId = getCurrentUser().getId();
-
-        return noteRepository.findByUserIdAndDeletedFalseAndDoneTrue(userId).stream()
-                .sorted(Comparator.comparing(
-                        Note::getCompletedAt,
-                        Comparator.nullsLast(Comparator.naturalOrder())
-                ).reversed())
-                .map(this::toResponse)
-                .toList();
+        return noteRepository.findByUserIdAndDeletedFalseAndDoneTrue(userId).stream().sorted(Comparator.comparing(Note::getCompletedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed()).map(this::toResponse).toList();
     }
 
     public List<NoteResponse> listTrash() {
         UUID userId = getCurrentUser().getId();
-
-        return noteRepository.findByUserIdAndDeletedTrue(userId).stream()
-                .sorted(Comparator.comparing(
-                        Note::getDeletedAt,
-                        Comparator.nullsLast(Comparator.naturalOrder())
-                ).reversed())
-                .map(this::toResponse)
-                .toList();
+        return noteRepository.findByUserIdAndDeletedTrue(userId).stream().sorted(Comparator.comparing(Note::getDeletedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed()).map(this::toResponse).toList();
     }
 
     public List<NoteResponse> listByDate(LocalDate date) {
         UUID userId = getCurrentUser().getId();
-
-        return noteRepository.findActiveByDateInsideRange(userId, date).stream()
-                .sorted(Comparator.comparing(Note::getCreatedAt))
-                .map(this::toResponse)
-                .toList();
+        return noteRepository.findActiveByDateInsideRange(userId, date).stream().sorted(Comparator.comparing(Note::getCreatedAt)).map(this::toResponse).toList();
     }
 
     public NoteResponse findById(UUID id) {
@@ -83,10 +57,8 @@ public class NoteService {
 
     public NoteResponse create(NoteRequest request) {
         LocalDateTime now = LocalDateTime.now();
-
         LocalDate startDate = request.date();
         LocalDate endDate = normalizeEndDate(request.date(), request.endDate());
-
         Note note = new Note();
         note.setUser(getCurrentUser());
         note.setTitle(request.title().trim());
@@ -108,10 +80,8 @@ public class NoteService {
 
     public NoteResponse update(UUID id, NoteRequest request) {
         Note note = getExistingNote(id);
-
         LocalDate startDate = request.date();
         LocalDate endDate = normalizeEndDate(request.date(), request.endDate());
-
         note.setTitle(request.title().trim());
         note.setDescription(request.description() == null ? "" : request.description().trim());
         note.setPriority(request.priority());
@@ -126,9 +96,7 @@ public class NoteService {
 
     public NoteResponse toggleDone(UUID id) {
         Note note = getExistingNote(id);
-
         boolean nextDone = !Boolean.TRUE.equals(note.getDone());
-
         note.setDone(nextDone);
         note.setCompletedAt(nextDone ? LocalDateTime.now() : null);
         note.setUpdatedAt(LocalDateTime.now());
@@ -143,7 +111,6 @@ public class NoteService {
 
     public NoteResponse moveToTrash(UUID id) {
         Note note = getExistingNote(id);
-
         note.setDeleted(true);
         note.setDeletedAt(LocalDateTime.now());
         note.setDone(false);
@@ -155,7 +122,6 @@ public class NoteService {
 
     public NoteResponse restoreFromTrash(UUID id) {
         Note note = getExistingNote(id);
-
         note.setDeleted(false);
         note.setDeletedAt(null);
         note.setUpdatedAt(LocalDateTime.now());
@@ -185,19 +151,12 @@ public class NoteService {
 
     private Note getExistingNote(UUID id) {
         UUID userId = getCurrentUser().getId();
-
-        return noteRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nota não encontrada"));
+        return noteRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new ResourceNotFoundException("Nota não encontrada"));
     }
 
     private User getCurrentUser() {
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
     }
 
     private NoteResponse toResponse(Note note) {

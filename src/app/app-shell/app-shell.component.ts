@@ -76,7 +76,8 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
       if (user && notificationsEnabled) {
         this.deadlineAlertService.start();
-      } else {
+      } 
+      else {
         this.deadlineAlertService.stop();
       }
 
@@ -87,7 +88,8 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
     if (this.authService.getToken()) {
       this.syncCurrentUserFromBackend();
-    } else {
+    } 
+    else {
       this.router.navigateByUrl('/login');
     }
   }
@@ -123,7 +125,6 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;
-
     setTimeout(() => {
       this.cal?.animateCalendarResize(340);
     }, 0);
@@ -131,7 +132,6 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
   collapseSidebar() {
     if (this.sidebarCollapsed) return;
-
     this.sidebarCollapsed = true;
 
     setTimeout(() => {

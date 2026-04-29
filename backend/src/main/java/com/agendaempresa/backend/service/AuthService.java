@@ -27,12 +27,7 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
     private final JwtService jwtService;
 
-    public AuthService(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            CustomUserDetailsService userDetailsService,
-            JwtService jwtService
-    ) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, CustomUserDetailsService userDetailsService, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
@@ -41,23 +36,19 @@ public class AuthService {
 
     public AuthMeResponse updateCurrentUserTheme(UpdateThemeRequest request) {
         User user = getAuthenticatedUser();
-
         user.setPreferredTheme(normalizeTheme(request.preferredTheme()));
         user.setUpdatedAt(LocalDateTime.now());
-
         User updatedUser = userRepository.save(user);
         return toMeResponse(updatedUser);
     }
 
     public AuthResponse register(RegisterRequest request) {
         String email = request.email().trim().toLowerCase();
-
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Já existe um usuário com esse e-mail");
         }
 
         LocalDateTime now = LocalDateTime.now();
-
         User user = new User();
         user.setName(request.name().trim());
         user.setEmail(email);
@@ -70,28 +61,14 @@ public class AuthService {
         user.setProfilePhoto(null);
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
-
         User savedUser = userRepository.save(user);
-
-        String token = jwtService.generateToken(
-                userDetailsService.loadUserByUsername(savedUser.getEmail())
-        );
-
-        return new AuthResponse(
-                savedUser.getId(),
-                savedUser.getName(),
-                savedUser.getEmail(),
-                savedUser.getRole(),
-                token,
-                "Usuário cadastrado com sucesso"
-        );
+        String token = jwtService.generateToken(userDetailsService.loadUserByUsername(savedUser.getEmail()));
+        return new AuthResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole(), token, "Usuário cadastrado com sucesso");
     }
 
     public AuthResponse login(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new IllegalArgumentException("Senha inválida");
@@ -101,14 +78,7 @@ public class AuthService {
                 userDetailsService.loadUserByUsername(user.getEmail())
         );
 
-        return new AuthResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                token,
-                "Login realizado com sucesso"
-        );
+        return new AuthResponse(user.getId(), user.getName(), user.getEmail(), user.getRole(), token, "Login realizado com sucesso");
     }
 
     public AuthMeResponse getCurrentUser() {
@@ -118,12 +88,9 @@ public class AuthService {
 
     public AuthResponse updateCurrentUser(UpdateProfileRequest request) {
         User user = getAuthenticatedUser();
-
         String newName = request.name().trim();
         String newEmail = request.email().trim().toLowerCase();
-
-        userRepository.findByEmail(newEmail)
-                .ifPresent(existingUser -> {
+        userRepository.findByEmail(newEmail).ifPresent(existingUser -> {
                     if (!existingUser.getId().equals(user.getId())) {
                         throw new IllegalArgumentException("Já existe um usuário com esse e-mail");
                     }
@@ -138,27 +105,14 @@ public class AuthService {
         user.setUpdatedAt(LocalDateTime.now());
 
         User updatedUser = userRepository.save(user);
-
-        String newToken = jwtService.generateToken(
-                userDetailsService.loadUserByUsername(updatedUser.getEmail())
-        );
-
-        return new AuthResponse(
-                updatedUser.getId(),
-                updatedUser.getName(),
-                updatedUser.getEmail(),
-                updatedUser.getRole(),
-                newToken,
-                "Perfil atualizado com sucesso"
-        );
+        String newToken = jwtService.generateToken(userDetailsService.loadUserByUsername(updatedUser.getEmail()));
+        return new AuthResponse(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(), updatedUser.getRole(), newToken, "Perfil atualizado com sucesso");
     }
 
     public AuthMeResponse updateCurrentUserPhoto(UpdateProfilePhotoRequest request) {
         User user = getAuthenticatedUser();
-
         user.setProfilePhoto(request.profilePhoto());
         user.setUpdatedAt(LocalDateTime.now());
-
         User updatedUser = userRepository.save(user);
         return toMeResponse(updatedUser);
     }
@@ -178,42 +132,26 @@ public class AuthService {
         user.setUpdatedAt(LocalDateTime.now());
 
         User updatedUser = userRepository.save(user);
-
-        String newToken = jwtService.generateToken(
-                userDetailsService.loadUserByUsername(updatedUser.getEmail())
-        );
-
-        return new AuthResponse(
-                updatedUser.getId(),
-                updatedUser.getName(),
-                updatedUser.getEmail(),
-                updatedUser.getRole(),
-                newToken,
-                "Senha atualizada com sucesso"
-        );
+        String newToken = jwtService.generateToken(userDetailsService.loadUserByUsername(updatedUser.getEmail()));
+        return new AuthResponse( updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(), updatedUser.getRole(), newToken, "Senha atualizada com sucesso");
     }
 
     private User getAuthenticatedUser() {
-        String currentEmail = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        return userRepository.findByEmail(currentEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(currentEmail).orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
     }
 
     private AuthMeResponse toMeResponse(User user) {
         return new AuthMeResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                sanitizeJobTitle(user.getJobTitle()),
-                sanitizeTimeZone(user.getTimeZone()),
-                user.getNotificationsEnabled() == null ? true : user.getNotificationsEnabled(),
-                normalizeTheme(user.getPreferredTheme()),
-                user.getProfilePhoto()
+            user.getId(), 
+            user.getName(), 
+            user.getEmail(), 
+            user.getRole(), 
+            sanitizeJobTitle(user.getJobTitle()), 
+            sanitizeTimeZone(user.getTimeZone()), 
+            user.getNotificationsEnabled() == null ? true : user.getNotificationsEnabled(), 
+            normalizeTheme(user.getPreferredTheme()), 
+            user.getProfilePhoto()
         );
     }
 

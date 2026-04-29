@@ -44,18 +44,18 @@ export class AnotacoesComponent implements OnInit, OnDestroy {
   }
 
   priorityLabel(priority: string): string {
-    if (priority === 'alta') return 'Alta';
+    if (priority === 'alta') 
+      return 'Alta';
+    
     if (priority === 'media') return 'Média';
-    return 'Baixa';
+      return 'Baixa';
   }
 
   private loadNotes() {
     this.loading = true;
     this.apiNotesService.getActive().subscribe({
       next: (notes) => {
-        this.notes = notes
-          .filter(note => !note.deleted && !note.done)
-          .sort((a, b) => {
+        this.notes = notes.filter(note => !note.deleted && !note.done).sort((a, b) => {
             const aDate = `${a.endDate || a.date}T${a.endTime || '23:59'}`;
             const bDate = `${b.endDate || b.date}T${b.endTime || '23:59'}`;
             return new Date(aDate).getTime() - new Date(bDate).getTime();

@@ -58,6 +58,7 @@ public class Note {
     @Column
     private LocalDateTime deletedAt;
 
+    //getters e setters
     public Note() {
     }
 

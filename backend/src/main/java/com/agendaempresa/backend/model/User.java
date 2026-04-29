@@ -47,6 +47,8 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+
+    //getters e setters
     public User() {
     }
 

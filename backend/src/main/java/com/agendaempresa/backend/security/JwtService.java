@@ -7,7 +7,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import jakarta.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -19,7 +18,6 @@ public class JwtService {
 
     @Value("${jwt.expiration-ms}")
     private long jwtExpirationMs;
-
     private SecretKey signingKey;
 
     @PostConstruct
@@ -30,8 +28,7 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + jwtExpirationMs);
-        return Jwts.builder().subject(userDetails.getUsername()).issuedAt(now)
-        .expiration(expiration).signWith(signingKey).compact();
+        return Jwts.builder().subject(userDetails.getUsername()).issuedAt(now).expiration(expiration).signWith(signingKey).compact();
     }
 
     public String extractUsername(String token) {

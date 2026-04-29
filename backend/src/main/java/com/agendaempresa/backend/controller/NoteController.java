@@ -42,8 +42,7 @@ public class NoteController {
 
     @GetMapping("/by-date")
     public List<NoteResponse> listByDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date
-    ) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date) {
         return noteService.listByDate(date);
     }
 
