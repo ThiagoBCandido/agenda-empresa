@@ -406,6 +406,4 @@ Melhorias futuras planejadas:
 
 Desenvolvido por **Thiago Barbosa Candido**.
 
-Projeto criado para fins de estudo, prática e portfólio como desenvolvedor full-stack.
-
 ---
