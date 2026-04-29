@@ -13,9 +13,6 @@ O sistema permite criar notas, definir prioridades, visualizar tarefas em calend
 ### Front-end
 
 - Angular
-- TypeScript
-- HTML
-- CSS
 - FullCalendar
 - RxJS
 
