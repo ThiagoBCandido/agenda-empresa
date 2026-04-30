@@ -5,9 +5,7 @@
   justify-content: center;
   flex-direction: column;
   gap: 16px;
-  background:
-    radial-gradient(circle at top, rgba(22, 101, 52, 0.18), transparent 35%),
-    linear-gradient(135deg, #020403 0%, #05140d 45%, #0a1e15 100%);
+  background: radial-gradient(circle at top, rgba(22, 101, 52, 0.18), transparent 35%), linear-gradient(135deg, #020403 0%, #05140d 45%, #0a1e15 100%);
   padding: 24px;
 }
 
@@ -132,10 +130,7 @@ body.theme-light .password-toggle img {
   color: white;
   position: relative;
   overflow: hidden;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.22s ease,
-    filter 0.22s ease;
+  transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.22s ease;
 }
 
 .login-btn::before {
@@ -145,12 +140,7 @@ body.theme-light .password-toggle img {
   left: -120%;
   width: 70%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.28),
-    transparent
-  );
+  background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
   transition: left 0.55s ease;
 }
 
@@ -171,9 +161,7 @@ body.theme-light .password-toggle img {
 
 .login-btn:focus-visible {
   outline: none;
-  box-shadow:
-    0 0 0 3px rgba(87, 180, 133, 0.18),
-    0 10px 24px rgba(87, 180, 133, 0.22);
+  box-shadow: 0 0 0 3px rgba(87, 180, 133, 0.18), 0 10px 24px rgba(87, 180, 133, 0.22);
 }
 
 .login-btn:disabled {

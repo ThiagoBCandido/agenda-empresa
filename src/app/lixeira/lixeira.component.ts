@@ -99,16 +99,7 @@ export class LixeiraComponent implements OnInit {
     const term = this.searchTerm.trim().toLowerCase();
     const filtered = this.notes.filter(note => {
       if (!term) return true;
-      const haystack = [
-        note.title,
-        note.description,
-        note.date,
-        this.formatGroupLabel(note.deletedAt)
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-
+      const haystack = [note.title, note.description, note.date, this.formatGroupLabel(note.deletedAt)].filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(term);
     });
 
@@ -120,12 +111,7 @@ export class LixeiraComponent implements OnInit {
       map.get(key)!.push(note);
     }
 
-    this.groups = Array.from(map.entries())
-      .sort((a, b) => b[0].localeCompare(a[0]))
-      .map(([key, items]) => ({
-        label: this.labelFromKey(key),
-        items
-      }));
+    this.groups = Array.from(map.entries()).sort((a, b) => b[0].localeCompare(a[0])).map(([key, items]) => ({label: this.labelFromKey(key), items}));
   }
 
   private groupKey(timestamp: number | null) {

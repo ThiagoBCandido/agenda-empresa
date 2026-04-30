@@ -2,12 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import {
-  AuthService,
-  UpdateProfileRequest,
-  ChangePasswordRequest,
-  AuthMeResponse
-} from '../core/services/auth.service';
+import { AuthService, UpdateProfileRequest, ChangePasswordRequest, AuthMeResponse } from '../core/services/auth.service';
 import { ThemeService, AppTheme } from '../core/services/theme.service';
 
 type TimeZoneOption = {
@@ -41,7 +36,6 @@ const TIME_ZONE_OPTIONS: TimeZoneOption[] = [
 export class PerfilComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private themeService = inject(ThemeService);
-
   private themeSub?: Subscription;
 
   userName = '';
@@ -51,20 +45,17 @@ export class PerfilComponent implements OnInit, OnDestroy {
   timeZone = 'America/Sao_Paulo';
   notificationsEnabled = true;
   preferredTheme: AppTheme = 'dark';
-
   loading = true;
   saving = false;
   errorMessage = '';
   successMessage = '';
   editMode = false;
-
   formName = '';
   formEmail = '';
   formJobTitle = 'Colaborador';
   formTimeZone = 'America/Sao_Paulo';
   formNotificationsEnabled = true;
   formPreferredTheme: AppTheme = 'dark';
-
   passwordEditMode = false;
   passwordSaving = false;
   passwordErrorMessage = '';
@@ -72,11 +63,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
   currentPassword = '';
   newPassword = '';
   confirmNewPassword = '';
-
   showCurrentPassword = false;
   showNewPassword = false;
   showConfirmNewPassword = false;
-
   profilePhoto: string | null = null;
   cropModalOpen = false;
   imageToCrop: string | null = null;
@@ -92,7 +81,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private dragStartY = 0;
   private dragOriginX = 0;
   private dragOriginY = 0;
-
   timeZoneOptions = TIME_ZONE_OPTIONS;
 
   ngOnInit() {
@@ -135,7 +123,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.errorMessage = '';
     this.successMessage = '';
-
     this.authService.refreshMe().subscribe({
       next: (data: AuthMeResponse) => {
         this.applyProfileData(data);
@@ -143,7 +130,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         const storedUser = this.authService.getCurrentUser();
-
         this.userName = storedUser?.name || 'Usuário';
         this.userEmail = storedUser?.email || 'usuario@empresa.com';
         this.userRole = this.mapRole(storedUser?.role || 'USER');
@@ -152,16 +138,13 @@ export class PerfilComponent implements OnInit, OnDestroy {
         this.notificationsEnabled = storedUser?.notificationsEnabled ?? true;
         this.preferredTheme = this.normalizeTheme(storedUser?.preferredTheme);
         this.profilePhoto = storedUser?.profilePhoto ?? null;
-
         this.formName = this.userName;
         this.formEmail = this.userEmail;
         this.formJobTitle = this.jobTitle;
         this.formTimeZone = this.timeZone;
         this.formNotificationsEnabled = this.notificationsEnabled;
         this.formPreferredTheme = this.preferredTheme;
-
-        this.errorMessage =
-          err?.error?.message || 'Não foi possível carregar os dados do perfil.';
+        this.errorMessage = err?.error?.message || 'Não foi possível carregar os dados do perfil.';
         this.loading = false;
       }
     });
@@ -286,8 +269,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         this.passwordSaving = false;
-        this.passwordErrorMessage =
-          err?.error?.message || 'Não foi possível alterar a senha.';
+        this.passwordErrorMessage = err?.error?.message || 'Não foi possível alterar a senha.';
       }
     });
   }
@@ -316,12 +298,10 @@ export class PerfilComponent implements OnInit, OnDestroy {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-
     if (!file) return;
     if (!file.type.startsWith('image/')) return;
 
     const reader = new FileReader();
-
     reader.onload = () => {
       if (typeof reader.result === 'string') {
         this.prepareCropper(reader.result);
@@ -334,7 +314,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   private prepareCropper(src: string) {
     const img = new Image();
-
     img.onload = () => {
       const baseScale = Math.max(
         this.previewSize / img.width,
@@ -358,20 +337,17 @@ export class PerfilComponent implements OnInit, OnDestroy {
     if (!this.imageToCrop) return;
 
     this.isDragging = true;
-
     const point = this.getPoint(event);
     this.dragStartX = point.x;
     this.dragStartY = point.y;
     this.dragOriginX = this.cropOffsetX;
     this.dragOriginY = this.cropOffsetY;
-
     event.preventDefault();
   }
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     if (!this.isDragging) return;
-
     this.cropOffsetX = this.dragOriginX + (event.clientX - this.dragStartX);
     this.cropOffsetY = this.dragOriginY + (event.clientY - this.dragStartY);
     this.clampOffsets();
@@ -390,7 +366,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.cropOffsetX = this.dragOriginX + (point.x - this.dragStartX);
     this.cropOffsetY = this.dragOriginY + (point.y - this.dragStartY);
     this.clampOffsets();
-
     event.preventDefault();
   }
 
@@ -416,10 +391,8 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   saveCroppedPhoto() {
     if (!this.imageToCrop) return;
-
     this.errorMessage = '';
     this.successMessage = '';
-
     const img = new Image();
 
     img.onload = () => {
@@ -429,11 +402,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
       const drawHeight = this.cropBaseHeight * this.cropZoom;
       const drawX = (this.previewSize - drawWidth) / 2 + this.cropOffsetX;
       const drawY = (this.previewSize - drawHeight) / 2 + this.cropOffsetY;
-
       const canvas = document.createElement('canvas');
       canvas.width = outputSize;
       canvas.height = outputSize;
-
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
@@ -443,19 +414,10 @@ export class PerfilComponent implements OnInit, OnDestroy {
       ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-
-      ctx.drawImage(
-        img,
-        drawX * outputScale,
-        drawY * outputScale,
-        drawWidth * outputScale,
-        drawHeight * outputScale
-      );
-
+      ctx.drawImage(img, drawX * outputScale, drawY * outputScale, drawWidth * outputScale, drawHeight * outputScale);
       ctx.restore();
 
       const finalImage = canvas.toDataURL('image/svg');
-
       this.authService.updateProfilePhoto({ profilePhoto: finalImage }).subscribe({
         next: (data) => {
           this.profilePhoto = data.profilePhoto ?? null;
@@ -463,27 +425,22 @@ export class PerfilComponent implements OnInit, OnDestroy {
           this.closeCropModal();
         },
         error: (err: any) => {
-          this.errorMessage =
-            err?.error?.message || 'Não foi possível atualizar a foto de perfil.';
+          this.errorMessage = err?.error?.message || 'Não foi possível atualizar a foto de perfil.';
         }
       });
     };
-
     img.src = this.imageToCrop;
   }
 
   removePhoto() {
     this.errorMessage = '';
     this.successMessage = '';
-
-    this.authService.updateProfilePhoto({ profilePhoto: null }).subscribe({
-      next: (data) => {
+    this.authService.updateProfilePhoto({ profilePhoto: null }).subscribe({next: (data) => {
         this.profilePhoto = data.profilePhoto ?? null;
         this.successMessage = 'Foto removida com sucesso.';
       },
       error: (err: any) => {
-        this.errorMessage =
-          err?.error?.message || 'Não foi possível remover a foto.';
+        this.errorMessage = err?.error?.message || 'Não foi possível remover a foto.';
       }
     });
   }
@@ -493,7 +450,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
     const drawHeight = this.cropBaseHeight * this.cropZoom;
     const maxX = Math.max(0, (drawWidth - this.previewSize) / 2);
     const maxY = Math.max(0, (drawHeight - this.previewSize) / 2);
-
     this.cropOffsetX = Math.min(maxX, Math.max(-maxX, this.cropOffsetX));
     this.cropOffsetY = Math.min(maxY, Math.max(-maxY, this.cropOffsetY));
   }
@@ -510,6 +466,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private mapRole(role: string): string {
     if (role === 'ADMIN') return 'Administrador';
     if (role === 'USER') return 'Colaborador';
+    
     return 'Colaborador';
   }
 
@@ -526,14 +483,12 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.notificationsEnabled = data.notificationsEnabled ?? true;
     this.preferredTheme = this.normalizeTheme(data.preferredTheme);
     this.profilePhoto = data.profilePhoto ?? null;
-
     this.formName = this.userName;
     this.formEmail = this.userEmail;
     this.formJobTitle = this.jobTitle;
     this.formTimeZone = this.timeZone;
     this.formNotificationsEnabled = this.notificationsEnabled;
     this.formPreferredTheme = this.preferredTheme;
-
     this.themeService.setTheme(this.preferredTheme);
   }
 }

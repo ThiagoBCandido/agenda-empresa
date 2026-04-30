@@ -1,26 +1,20 @@
 <div class="deadline-backdrop" *ngIf="note"></div>
-
 <div class="deadline-modal" *ngIf="note" [ngClass]="priorityClass()">
   <div class="deadline-head">
     <div class="deadline-title">Prazo atingido</div>
     <button type="button" class="deadline-close" (click)="close()">✕</button>
   </div>
-
   <div class="deadline-note-title">{{ note.title }}</div>
-
   <div class="deadline-note-body" *ngIf="note.description; else noDesc">
     {{ note.description }}
   </div>
-
   <ng-template #noDesc>
     <div class="deadline-note-body empty">Sem descrição.</div>
   </ng-template>
-
   <div class="deadline-meta">
     <span>{{ note.endDate || note.date }}</span>
     <span *ngIf="note.endTime">{{ note.endTime }}</span>
   </div>
-
   <div class="deadline-actions">
     <button type="button" class="action-btn neutral" (click)="close()">Fechar</button>
     <button type="button" class="action-btn success" (click)="markDone()">Concluir</button>

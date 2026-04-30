@@ -11,6 +11,7 @@ import { AuthService } from '../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
+
 export class RegisterComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -54,7 +55,6 @@ export class RegisterComponent implements OnInit {
     if (this.loading) return;
 
     this.errorMessage = '';
-
     const name = this.name.trim();
     const email = this.email.trim();
     const password = this.password.trim();
@@ -69,14 +69,9 @@ export class RegisterComponent implements OnInit {
       this.errorMessage = 'As senhas estão diferentes.';
       return;
     }
-
     this.loading = true;
 
-    this.authService.register({
-      name,
-      email,
-      password: this.password
-    }).subscribe({
+    this.authService.register({name, email, password: this.password}).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigateByUrl('/app');

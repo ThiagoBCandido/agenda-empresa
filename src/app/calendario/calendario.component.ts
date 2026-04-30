@@ -325,10 +325,7 @@ export class CalendarioComponent implements OnInit {
     if (!title && !desc) return;
 
     const payload = this.buildPayload();
-
-    const request$ = this.isEditing && this.editingId
-      ? this.notes.update(this.editingId, payload)
-      : this.notes.create(payload);
+    const request$ = this.isEditing && this.editingId ? this.notes.update(this.editingId, payload) : this.notes.create(payload);
 
     request$.pipe(
       switchMap(() => this.applyPendingActions())
@@ -352,10 +349,7 @@ export class CalendarioComponent implements OnInit {
     const noteId = this.editingId;
     const payload = this.buildPayload();
 
-    this.notes.update(noteId, payload).pipe(
-      switchMap(() => this.notes.toggleDone(noteId)),
-      switchMap(() => this.applyPendingActions(noteId))
-    ).subscribe({
+    this.notes.update(noteId, payload).pipe(switchMap(() => this.notes.toggleDone(noteId)), switchMap(() => this.applyPendingActions(noteId))).subscribe({
       next: () => {
         this.pendingActions.clear();
         this.reloadCalendarEvents();
@@ -387,7 +381,6 @@ export class CalendarioComponent implements OnInit {
       this.pendingActions.delete(noteId);
       return;
     }
-
     this.pendingActions.set(noteId, 'trash');
   }
 }

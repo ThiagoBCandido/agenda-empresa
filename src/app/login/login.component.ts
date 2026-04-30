@@ -59,11 +59,7 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
 
-    this.authService.login({
-      email,
-      password: this.password
-    }).subscribe({
-      next: () => {
+    this.authService.login({email, password: this.password}).subscribe({next: () => {
         this.loading = false;
         this.router.navigateByUrl('/app');
       },

@@ -19,7 +19,6 @@ export class ConcluidosComponent implements OnInit {
   notes: NoteBlock[] = [];
   searchTerm = '';
   groups: CompletedGroup[] = [];
-
   showModal = false;
   selectedNote: NoteBlock | null = null;
 

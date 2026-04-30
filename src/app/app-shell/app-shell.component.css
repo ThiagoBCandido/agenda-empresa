@@ -515,7 +515,6 @@
   display: block;
 }
 
-/* modo claro */
 :host-context(body.theme-light) .user-avatar-mini,
 :host-context(body.theme-light) .user-avatar-fallback {
   border: 1px solid #cfe0ff;

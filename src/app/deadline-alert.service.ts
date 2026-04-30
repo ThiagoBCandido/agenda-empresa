@@ -20,7 +20,6 @@ export class DeadlineAlertService {
 
     this.requestBrowserPermission();
     this.checkNow();
-
     this.intervalId = window.setInterval(() => {
       this.checkNow();
     }, this.checkIntervalMs);
@@ -68,27 +67,22 @@ export class DeadlineAlertService {
   private checkNow() {
     if (this.checking) return;
     this.checking = true;
-
     const now = new Date();
-
-    this.notesService.getActive().subscribe({
-      next: (activeNotes) => {
-        for (const note of activeNotes) {
+    this.notesService.getActive().subscribe({next: (activeNotes) => {for (const note of activeNotes) {
           if (this.alertedIds.has(note.id)) continue;
           if (note.deleted || note.done) continue;
-
           const deadline = this.getDeadline(note);
-          if (!deadline) continue;
 
+          if (!deadline) continue;
           if (deadline.getTime() <= now.getTime()) {
             this.alertedIds.add(note.id);
             this.queue.push(note);
           }
         }
-
         this.showNext();
         this.checking = false;
       },
+
       error: (err) => {
         console.error('Erro ao verificar deadlines:', err);
         this.checking = false;
@@ -99,20 +93,16 @@ export class DeadlineAlertService {
   private showNext() {
     if (this.currentAlertSubject.value) return;
     if (!this.queue.length) return;
-
     const next = this.queue.shift() || null;
     if (!next) return;
-
     this.currentAlertSubject.next(next);
     this.showBrowserNotification(next);
   }
 
   private getDeadline(note: NoteBlock): Date | null {
     if (!note.endTime || !note.endTime.trim()) return null;
-
     const endDate = note.endDate?.trim() || note.date?.trim();
     if (!endDate) return null;
-
     const dt = new Date(`${endDate}T${note.endTime}`);
     if (isNaN(dt.getTime())) return null;
 
@@ -121,7 +111,6 @@ export class DeadlineAlertService {
 
   private requestBrowserPermission() {
     if (!('Notification' in window)) return;
-
     if (Notification.permission === 'default') {
       Notification.requestPermission().catch(() => {});
     }
@@ -131,16 +120,8 @@ export class DeadlineAlertService {
     if (!('Notification' in window)) return;
     if (Notification.permission !== 'granted') return;
 
-    const bodyParts = [
-      note.description?.trim() || 'Prazo atingido.',
-      note.endDate ? `Prazo: ${note.endDate}${note.endTime ? ' ' + note.endTime : ''}` : ''
-    ].filter(Boolean);
-
-    const notification = new Notification(`Prazo: ${note.title}`, {
-      body: bodyParts.join(' • '),
-      tag: `deadline-${note.id}`
-    });
-
+    const bodyParts = [note.description?.trim() || 'Prazo atingido.', note.endDate ? `Prazo: ${note.endDate}${note.endTime ? ' ' + note.endTime : ''}` : ''].filter(Boolean);
+    const notification = new Notification(`Prazo: ${note.title}`, {body: bodyParts.join(' • '), tag: `deadline-${note.id}`});
     notification.onclick = () => {
       window.focus();
       notification.close();

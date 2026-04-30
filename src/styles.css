@@ -13,20 +13,14 @@ body{
 }
 
 body.theme-dark{
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(82,183,136,.22), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(45,106,79,.18), transparent 55%),
-    linear-gradient(180deg, #0b0f0e 0%, #0a1411 55%, #07100d 100%);
+  background: radial-gradient(1200px 600px at 10% -10%, rgba(82,183,136,.22), transparent 55%), radial-gradient(900px 500px at 90% 0%, rgba(45,106,79,.18), transparent 55%), linear-gradient(180deg, #0b0f0e 0%, #0a1411 55%, #07100d 100%);
   color:#e9f5ef;
   font-family:"Segoe UI", Roboto, Arial, sans-serif;
   letter-spacing:.1px;
 }
 
 body.theme-light{
-  background:
-    radial-gradient(1200px 700px at 10% -10%, rgba(173,216,255,.65), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(191,229,255,.70), transparent 55%),
-    linear-gradient(180deg, #ffffff 0%, #eef8ff 48%, #dff1ff 100%);
+  background: radial-gradient(1200px 700px at 10% -10%, rgba(173,216,255,.65), transparent 55%), radial-gradient(900px 500px at 90% 0%, rgba(191,229,255,.70), transparent 55%), linear-gradient(180deg, #ffffff 0%, #eef8ff 48%, #dff1ff 100%);
   color:#153243;
   font-family:"Segoe UI", Roboto, Arial, sans-serif;
   letter-spacing:.1px;
@@ -45,10 +39,7 @@ app-root{
 }
 
 body.theme-light .app-shell{
-  background:
-    radial-gradient(1200px 700px at 10% -10%, rgba(173,216,255,.65), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(191,229,255,.70), transparent 55%),
-    linear-gradient(180deg, #ffffff 0%, #eef8ff 48%, #dff1ff 100%) !important;
+  background: radial-gradient(1200px 700px at 10% -10%, rgba(173,216,255,.65), transparent 55%), radial-gradient(900px 500px at 90% 0%, rgba(191,229,255,.70), transparent 55%), linear-gradient(180deg, #ffffff 0%, #eef8ff 48%, #dff1ff 100%) !important;
   color:#153243 !important;
 }
 
